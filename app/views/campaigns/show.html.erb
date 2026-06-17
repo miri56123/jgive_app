@@ -18,48 +18,68 @@
 
 <%# Stats Bar %>
 <div class="bg-white border-b border-gray-100 shadow-sm">
-  <div class="max-w-5xl mx-auto px-4 py-4">
-    <%# Progress bar — scales to bonus goal when present; marker at primary goal %>
-    <div class="mb-3">
-      <%
-        total_range = (@campaign.bonus_goal_amount.present? ? @campaign.bonus_goal_amount : @campaign.goal_amount).to_f
-        fill_pct    = [(@campaign.amount_raised.to_f / total_range * 100), 100].min
-        marker_pct  = @campaign.bonus_goal_amount.present? ? (@campaign.goal_amount.to_f / total_range * 100) : nil
-      %>
-      <div class="relative w-full bg-gray-200 rounded-full h-2.5">
-        <div class="bg-green-500 h-2.5 rounded-full transition-all"
-             style="width: <%= fill_pct.round(2) %>%"></div>
-        <% if marker_pct %>
-          <div class="absolute bg-white border border-gray-300 rounded-sm"
-               style="width:3px; top:-4px; bottom:-4px; right:<%= marker_pct.round(2) %>%"></div>
-        <% end %>
+  <div class="max-w-5xl mx-auto px-6 py-5">
+    <%
+      has_bonus = @campaign.bonus_goal_amount.present?
+      total_bar = (has_bonus ? @campaign.bonus_goal_amount : @campaign.goal_amount).to_f
+      raised    = @campaign.amount_raised.to_f
+      raise_pct = [(raised / total_bar * 100), 100].min.round(2)
+      goal_pct  = has_bonus ? (@campaign.goal_amount.to_f / total_bar * 100).round(2) : nil
+    %>
+
+    <%# Row 1: big amount (right in RTL) + % label (left in RTL) %>
+    <div class="flex items-end justify-between mb-2">
+      <div class="text-4xl font-extrabold text-green-700" style="direction:ltr">
+        &#8362; <%= number_with_delimiter(raised.to_i) %>
+      </div>
+      <div class="text-sm font-semibold text-gray-700">
+        <span class="text-green-600 font-bold"><%= @campaign.percent_funded %>%</span> גויסו
       </div>
     </div>
-    <div class="flex flex-wrap gap-6 items-center justify-between">
-      <div class="text-center">
-        <div class="text-2xl font-bold text-green-600 dir-ltr">
-          ₪ <%= number_with_delimiter(@campaign.amount_raised.to_i) %>
+
+    <%# Progress bar — LTR: green(raised) | gray(gap to goal) | heart | purple(bonus zone) %>
+    <div class="relative w-full my-4" style="height:10px; direction:ltr">
+      <% if has_bonus %>
+        <%# Gray base layer (regular goal zone) %>
+        <div class="absolute inset-0 rounded-full bg-gray-200"
+             style="width:<%= goal_pct %>%"></div>
+        <%# Purple layer (bonus zone, right of goal marker) %>
+        <div class="absolute inset-0 bg-purple-500"
+             style="left:<%= goal_pct %>%; right:0; border-radius:0 9999px 9999px 0"></div>
+        <%# Green fill (amount raised) %>
+        <div class="absolute inset-0 bg-green-500"
+             style="width:<%= raise_pct %>%; border-radius:9999px 0 0 9999px"></div>
+        <%# Orange heart marker at current progress %>
+        <div class="absolute" style="left:<%= raise_pct %>%; top:50%; transform:translate(-50%,-58%); font-size:22px; line-height:1; pointer-events:none">🧡</div>
+      <% else %>
+        <div class="absolute inset-0 rounded-full bg-gray-200"></div>
+        <div class="absolute inset-0 rounded-full bg-green-500 transition-all"
+             style="width:<%= raise_pct %>%"></div>
+      <% end %>
+    </div>
+
+    <%# Row 3: stats + donate button (RTL: first=right, last=left) %>
+    <div class="flex items-center justify-between mt-3 gap-4">
+      <%# RIGHT: donor count %>
+      <div class="text-sm whitespace-nowrap">
+        <span class="text-gray-500">מספר תורמים:</span>
+        <span class="font-bold text-gray-800"> <%= number_with_delimiter(@campaign.donor_count) %></span>
+      </div>
+      <%# CENTER: primary goal %>
+      <div class="text-sm whitespace-nowrap">
+        <span class="text-gray-500">יעד:</span>
+        <span class="font-bold text-green-700" style="direction:ltr;display:inline-block">&#8362; <%= number_with_delimiter(@campaign.goal_amount.to_i) %></span>
+      </div>
+      <%# LEFT: bonus goal (purple) %>
+      <% if has_bonus %>
+        <div class="text-sm whitespace-nowrap">
+          <span class="text-purple-600">יעד בונוס:</span>
+          <span class="font-bold text-purple-600" style="direction:ltr;display:inline-block">&#8362; <%= number_with_delimiter(@campaign.bonus_goal_amount.to_i) %></span>
         </div>
-        <div class="text-xs text-gray-500 mt-0.5">גויסו</div>
-      </div>
-      <div class="text-center">
-        <div class="text-2xl font-bold text-purple-600"><%= @campaign.percent_funded %>%</div>
-        <div class="text-xs text-gray-500 mt-0.5">מהיעד</div>
-      </div>
-      <div class="text-center">
-        <div class="text-2xl font-bold text-gray-800"><%= number_with_delimiter(@campaign.donor_count) %></div>
-        <div class="text-xs text-gray-500 mt-0.5">תורמים</div>
-      </div>
-      <div class="text-center">
-        <div class="text-lg font-semibold text-gray-600">
-          יעד: ₪ <%= number_with_delimiter(@campaign.goal_amount.to_i) %>
-        </div>
-        <% if @campaign.bonus_goal_amount.present? %>
-          <div class="text-xs text-gray-400">יעד בונוס: ₪ <%= number_with_delimiter(@campaign.bonus_goal_amount.to_i) %></div>
-        <% end %>
-      </div>
+      <% end %>
+      <%# Donate CTA %>
       <a href="#donation-form"
-         class="bg-purple-600 text-white font-bold px-8 py-3 rounded-full hover:bg-purple-700 transition text-base shadow">
+         class="bg-purple-600 text-white font-bold px-8 py-3 rounded-full hover:bg-purple-700 transition text-base shadow shrink-0">
         לתרומה
       </a>
     </div>

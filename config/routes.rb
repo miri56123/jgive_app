@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  root to: redirect("/campaigns/1")
+  root to: "campaigns#index"
 
-  resources :campaigns, only: [ :show ] do
+  resources :campaigns, only: [ :index, :show ] do
     resources :donations, only: [ :create ]
   end
 

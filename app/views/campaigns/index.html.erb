@@ -1,0 +1,61 @@
+<div class="max-w-5xl mx-auto px-4 py-10">
+  <h1 class="text-2xl font-bold text-gray-900 mb-8 text-right">קמפיינים פעילים</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+    <% @campaigns.each do |campaign| %>
+      <%
+        total_range = (campaign.bonus_goal_amount.present? ? campaign.bonus_goal_amount : campaign.goal_amount).to_f
+        fill_pct    = [(campaign.amount_raised.to_f / total_range * 100), 100].min.round(1)
+      %>
+      <%= link_to campaign_path(campaign),
+            class: "block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow" do %>
+
+        <%# Cover image %>
+        <div class="relative h-52 bg-gray-200 overflow-hidden">
+          <% if campaign.cover_image_url.present? %>
+            <img src="<%= campaign.cover_image_url %>"
+                 alt="<%= campaign.title %>"
+                 class="w-full h-full object-cover">
+          <% end %>
+          <%# Heart icon — top-left in RTL %>
+          <div class="absolute top-3 end-3 bg-white bg-opacity-80 rounded-full p-1.5">
+            <svg style="width:18px;height:18px" fill="none" stroke="#c084fc" stroke-width="1.5"
+                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="p-4">
+          <%# Title %>
+          <h2 class="text-base font-bold text-gray-900 text-right leading-snug mb-0.5">
+            <%= campaign.title %>
+          </h2>
+          <%# Organization %>
+          <p class="text-xs text-gray-400 text-right mb-3">ע"י <%= campaign.organization_name %></p>
+
+          <%# Amount raised %>
+          <div class="flex items-baseline justify-end gap-1 mb-2">
+            <span class="text-sm text-gray-400">גויס</span>
+            <span class="text-xl font-bold text-gray-900 dir-ltr">
+              ₪ <%= number_with_delimiter(campaign.amount_raised.to_i) %>
+            </span>
+          </div>
+
+          <%# Progress bar %>
+          <div class="w-full bg-gray-200 rounded-full h-1.5 mb-3">
+            <div class="bg-green-500 h-1.5 rounded-full" style="width:<%= fill_pct %>%"></div>
+          </div>
+
+          <%# Donors + % funded %>
+          <div class="flex justify-between text-xs text-gray-400">
+            <span><%= number_with_delimiter(campaign.donor_count) %> תורמים</span>
+            <span><%= campaign.percent_funded %>% גויס</span>
+          </div>
+        </div>
+
+      <% end %>
+    <% end %>
+  </div>
+</div>
