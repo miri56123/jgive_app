@@ -17,11 +17,16 @@ class Donation < ApplicationRecord
   validates :months,
             numericality: { only_integer: true, in: 2..DEFAULT_MONTHS },
             allow_nil: true
+  validates :months, absence: true, if: :one_time?
 
   def display_name
     if anonymous?          then "תורם אנונימי"
     elsif first_name_only? then donor_name&.split&.first
     else                        donor_name
     end
+  end
+
+  def total_committed_amount
+    recurring? ? amount * months.to_i : amount
   end
 end

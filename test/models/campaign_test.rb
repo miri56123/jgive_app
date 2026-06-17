@@ -95,4 +95,10 @@ class CampaignTest < ActiveSupport::TestCase
   test "RECENT_DONATIONS_LIMIT constant is defined" do
     assert_equal 20, Campaign::RECENT_DONATIONS_LIMIT
   end
+
+  test "requires organization_name" do
+    campaign = Campaign.new(title: "Test", goal_amount: 1000)
+    assert_not campaign.valid?
+    assert_includes campaign.errors[:organization_name], "can't be blank"
+  end
 end

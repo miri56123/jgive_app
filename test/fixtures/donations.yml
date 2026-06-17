@@ -1,31 +1,30 @@
 paid_one:
   campaign: orange_garden
   amount: 180.00
-  frequency: 0
-  display_preference: 0
+  frequency: one_time
+  display_preference: full_name
   donor_name: "ישראל כהן"
-  status: 1
+  status: paid
 
 paid_two:
   campaign: orange_garden
   amount: 360.00
-  frequency: 0
-  display_preference: 1
+  frequency: one_time
+  display_preference: first_name_only
   donor_name: "מיכל לוי"
-  status: 1
+  status: paid
 
 pending_one:
   campaign: orange_garden
   amount: 260.00
-  frequency: 0
-  display_preference: 0
+  frequency: one_time
+  display_preference: full_name
   donor_name: "דוד ברגר"
-  status: 0
+  status: pending
 
 anonymous_paid:
   campaign: orange_garden
   amount: 500.00
-  frequency: 0
-  display_preference: 2
-  donor_name: ""
-  status: 1
+  frequency: one_time
+  display_preference: anonymous
+  status: paid

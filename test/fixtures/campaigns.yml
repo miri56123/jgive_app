@@ -4,18 +4,18 @@ orange_garden:
   organization_name: "עמותת וְנָטַעְתָּ"
   goal_amount: 2000000.00
   bonus_goal_amount: 5000000.00
-  status: 0
+  status: active
 
 food_bank:
   title: "מזון לכל"
   subtitle: "מאבק ברעב"
   organization_name: "עמותת לחם לכל"
   goal_amount: 500000.00
-  status: 0
+  status: active
 
 ended_campaign:
   title: "קמפיין שהסתיים"
   subtitle: "הסתיים"
   organization_name: "עמותה לדוגמה"
   goal_amount: 100000.00
-  status: 1
+  status: ended

@@ -7,6 +7,7 @@ class Campaign < ApplicationRecord
   has_many :donations, dependent: :destroy
 
   validates :title, presence: true
+  validates :organization_name, presence: true
   validates :goal_amount, presence: true, numericality: { greater_than: 0 }
 
   # Includes pending: a submitted donation should immediately update progress
@@ -38,7 +39,7 @@ class Campaign < ApplicationRecord
   end
 
   def preset_amounts
-    presets_data.map { |p| { amount: p[:amount], label: p[:label] } }
+    presets_data
   end
 
   private

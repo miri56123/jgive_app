@@ -1,6 +1,6 @@
 class CampaignsController < ApplicationController
   def index
-    @campaigns = Campaign.all.order(created_at: :desc)
+    @campaigns = Campaign.order(status: :asc, created_at: :desc)
   end
 
   def show

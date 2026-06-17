@@ -115,4 +115,25 @@ class DonationTest < ActiveSupport::TestCase
     d = Donation.new(valid_attrs.merge(frequency: :one_time, months: nil))
     assert d.valid?
   end
+
+  test "months must be absent for one_time donations" do
+    d = Donation.new(valid_attrs.merge(frequency: :one_time, months: 12))
+    assert_not d.valid?
+    assert_includes d.errors[:months], "must be blank"
+  end
+
+  test "total_committed_amount for one_time equals amount" do
+    d = Donation.new(valid_attrs.merge(amount: 180, frequency: :one_time))
+    assert_equal 180, d.total_committed_amount
+  end
+
+  test "total_committed_amount for recurring equals amount times months" do
+    d = Donation.new(valid_attrs.merge(amount: 180, frequency: :recurring, months: 12))
+    assert_equal 2160, d.total_committed_amount
+  end
+
+  test "total_committed_amount for recurring with nil months defaults to 0" do
+    d = Donation.new(valid_attrs.merge(amount: 180, frequency: :recurring, months: nil))
+    assert_equal 0, d.total_committed_amount
+  end
 end

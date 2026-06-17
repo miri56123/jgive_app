@@ -20,7 +20,7 @@ rails db:setup        # creates DB, runs migrations, seeds data
 bin/dev               # starts Rails + Tailwind watcher
 ```
 
-Visit `http://localhost:3000` — it redirects to campaign #1.
+Visit `http://localhost:3000` — shows the campaigns index; click any campaign to open its page.
 
 **Run tests:**
 ```bash
@@ -50,7 +50,7 @@ DB indexes: `campaign_id` (via FK reference), composite `[campaign_id, status]` 
 
 ### Controllers
 
-- `CampaignsController#show` — loads campaign + last 20 paid donations (no N+1: all columns are on the donation row). 404 on missing campaign via `rescue_from ActiveRecord::RecordNotFound`.
+- `CampaignsController#show` — loads campaign + last 20 donations (pending + paid; memoized to avoid repeated DB hits). 404 on missing campaign via `rescue_from ActiveRecord::RecordNotFound`.
 - `DonationsController#create` — strong params, delegates to `CreateDonation`, redirects on success or re-renders on failure.
 
 ### Views
