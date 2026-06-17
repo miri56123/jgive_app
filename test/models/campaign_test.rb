@@ -51,10 +51,10 @@ class CampaignTest < ActiveSupport::TestCase
   test "progress_pct uses bonus_goal_amount as ceiling when present" do
     campaign = campaigns(:orange_garden)
     if campaign.bonus_goal_amount.present?
-      expected = [(campaign.amount_raised.to_f / campaign.bonus_goal_amount.to_f * 100), 100].min.round(2)
+      expected = [ (campaign.amount_raised.to_f / campaign.bonus_goal_amount.to_f * 100), 100 ].min.round(2)
       assert_equal expected, campaign.progress_pct
     else
-      expected = [(campaign.amount_raised.to_f / campaign.goal_amount.to_f * 100), 100].min.round(2)
+      expected = [ (campaign.amount_raised.to_f / campaign.goal_amount.to_f * 100), 100 ].min.round(2)
       assert_equal expected, campaign.progress_pct
     end
   end

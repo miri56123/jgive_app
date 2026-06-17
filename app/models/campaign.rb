@@ -22,14 +22,14 @@ class Campaign < ApplicationRecord
 
   def percent_funded
     return 0 if goal_amount.zero?
-    [(amount_raised / goal_amount * 100).round, 100].min
+    [ (amount_raised / goal_amount * 100).round, 100 ].min
   end
 
   # Percentage of the bar to fill (uses bonus_goal as ceiling when present)
   def progress_pct
     total = (bonus_goal_amount.present? ? bonus_goal_amount : goal_amount).to_f
     return 0 if total.zero?
-    [(amount_raised.to_f / total * 100), 100].min.round(2)
+    [ (amount_raised.to_f / total * 100), 100 ].min.round(2)
   end
 
   # Position of the primary-goal marker when a bonus goal exists (nil otherwise)
