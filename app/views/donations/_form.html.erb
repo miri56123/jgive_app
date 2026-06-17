@@ -35,7 +35,7 @@
                 data-amount="<%= preset[:amount] %>"
                 data-donation-form-target="presetBtn"
                 class="preset-btn border-2 border-gray-200 rounded-xl p-3 text-center hover:border-purple-400 transition cursor-pointer">
-          <div class="text-lg font-bold text-purple-600">₪ <%= number_with_delimiter(preset[:amount]) %></div>
+          <div class="text-lg font-bold text-purple-600" data-donation-form-target="presetAmount">₪ <%= number_with_delimiter(preset[:amount]) %></div>
           <div class="text-xs text-gray-500 mt-0.5"><%= preset[:label] %></div>
         </button>
       <% end %>
@@ -50,9 +50,28 @@
                 placeholder: "סכום",
                 min: 1, step: 1,
                 class: "w-full border-0 bg-transparent text-center text-purple-600 font-bold text-lg focus:outline-none focus:ring-0",
-                data: { donation_form_target: "amountField", action: "input->donation-form#clearPreset" } %>
+                data: { donation_form_target: "amountField", action: "input->donation-form#onCustomAmount" } %>
         </div>
       </div>
+    </div>
+  </div>
+
+  <%# Months selector + total — shown only for recurring %>
+  <div data-donation-form-target="monthsRow" class="hidden space-y-3">
+    <%= f.hidden_field :months, value: 36, data: { donation_form_target: "monthsField" } %>
+    <div class="flex items-center justify-between">
+      <label class="text-sm font-medium text-gray-700">מספר חודשים:</label>
+      <select data-donation-form-target="monthsSelect"
+              data-action="change->donation-form#onMonthsChange"
+              class="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+        <% (2..36).each do |n| %>
+          <option value="<%= n %>" <%= "selected" if n == 36 %>><%= n %> חודשים</option>
+        <% end %>
+      </select>
+    </div>
+    <div class="bg-purple-50 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
+      <span class="text-gray-500" data-donation-form-target="monthsLabel">× 36 חודשים</span>
+      <span class="font-bold text-purple-700">סה"כ: ₪<span data-donation-form-target="totalDisplay">0</span></span>
     </div>
   </div>
 

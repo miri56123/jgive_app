@@ -22,7 +22,7 @@ class DonationsController < ApplicationController
 
   def donation_params
     params.require(:donation).permit(
-      :amount, :frequency, :display_preference, :donor_name, :dedication_message
+      :amount, :frequency, :months, :display_preference, :donor_name, :dedication_message
     )
   end
 end

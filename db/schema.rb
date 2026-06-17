@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_083916) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_150000) do
   create_table "campaigns", force: :cascade do |t|
     t.decimal "bonus_goal_amount", precision: 12, scale: 2
     t.string "cover_image_url"
@@ -32,6 +32,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_083916) do
     t.integer "display_preference", default: 0, null: false
     t.string "donor_name"
     t.integer "frequency", default: 0, null: false
+    t.integer "months"
     t.string "payment_intent_id"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false

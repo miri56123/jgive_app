@@ -2,20 +2,23 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "presetBtn", "amountField", "customCard",
+    "presetBtn", "presetAmount", "amountField", "customCard",
     "oneTimeBtn", "recurringBtn", "frequencyRadio",
-    "displayRadio", "nameField"
+    "displayRadio", "nameField",
+    "monthsRow", "monthsSelect", "monthsField", "monthsLabel", "totalDisplay"
   ]
 
   connect() {
+    this.currentAmount = 0
     this.refreshFrequencyUI()
     this.refreshAnonymousUI()
   }
 
   // ── Preset amount selection ──────────────────────────────
   selectPreset(event) {
-    const amount = event.currentTarget.dataset.amount
-    // Set the single amount field directly — no hidden field needed
+    const amount = parseFloat(event.currentTarget.dataset.amount)
+    this.currentAmount = amount
+
     if (this.hasAmountFieldTarget) this.amountFieldTarget.value = amount
 
     this.presetBtnTargets.forEach(btn => {
@@ -25,15 +28,21 @@ export default class extends Controller {
       btn.classList.toggle("border-gray-200", !selected)
     })
 
-    // Clear custom card highlight when preset chosen
     if (this.hasCustomCardTarget) {
       this.customCardTarget.classList.remove("border-purple-500", "bg-purple-50")
       this.customCardTarget.classList.add("border-dashed", "border-gray-300")
     }
+
+    this.updateTotal()
+  }
+
+  onCustomAmount() {
+    this.currentAmount = parseFloat(this.amountFieldTarget.value) || 0
+    this.clearPreset()
+    this.updateTotal()
   }
 
   clearPreset() {
-    // User typed a custom amount — deselect all presets
     this.presetBtnTargets.forEach(btn => {
       btn.classList.remove("border-purple-500", "bg-purple-50")
       btn.classList.add("border-gray-200")
@@ -54,17 +63,69 @@ export default class extends Controller {
   }
 
   refreshFrequencyUI() {
-    const recurring = this.frequencyRadioTargets.find(r => r.value === "recurring" && r.checked)
+    const isRecurring = !!this.frequencyRadioTargets.find(r => r.value === "recurring" && r.checked)
+
     if (this.hasOneTimeBtnTarget) {
-      this.oneTimeBtnTarget.classList.toggle("bg-white", !recurring)
-      this.oneTimeBtnTarget.classList.toggle("shadow", !recurring)
-      this.oneTimeBtnTarget.classList.toggle("text-purple-700", !recurring)
+      this.oneTimeBtnTarget.classList.toggle("bg-white", !isRecurring)
+      this.oneTimeBtnTarget.classList.toggle("shadow", !isRecurring)
+      this.oneTimeBtnTarget.classList.toggle("text-purple-700", !isRecurring)
     }
     if (this.hasRecurringBtnTarget) {
-      this.recurringBtnTarget.classList.toggle("bg-white", !!recurring)
-      this.recurringBtnTarget.classList.toggle("shadow", !!recurring)
-      this.recurringBtnTarget.classList.toggle("text-purple-700", !!recurring)
+      this.recurringBtnTarget.classList.toggle("bg-white", isRecurring)
+      this.recurringBtnTarget.classList.toggle("shadow", isRecurring)
+      this.recurringBtnTarget.classList.toggle("text-purple-700", isRecurring)
     }
+
+    // Show/hide months row
+    if (this.hasMonthsRowTarget) {
+      this.monthsRowTarget.classList.toggle("hidden", !isRecurring)
+    }
+
+    // Update preset button labels
+    this.updatePresetLabels(isRecurring)
+    this.updateTotal()
+  }
+
+  updatePresetLabels(isRecurring) {
+    const months = this.currentMonths()
+    this.presetBtnTargets.forEach(btn => {
+      const amount = parseFloat(btn.dataset.amount)
+      const amountEl = btn.querySelector("[data-donation-form-target='presetAmount']")
+      if (!amountEl) return
+      if (isRecurring) {
+        amountEl.textContent = `${months} × ₪ ${amount.toLocaleString("he-IL")}`
+      } else {
+        amountEl.textContent = `₪ ${amount.toLocaleString("he-IL")}`
+      }
+    })
+  }
+
+  // ── Months selector ──────────────────────────────────────
+  onMonthsChange() {
+    const months = this.currentMonths()
+    // sync hidden field so it's submitted with the form
+    if (this.hasMonthsFieldTarget) this.monthsFieldTarget.value = months
+    this.updatePresetLabels(true)
+    this.updateTotal()
+  }
+
+  currentMonths() {
+    if (this.hasMonthsSelectTarget) return parseInt(this.monthsSelectTarget.value) || 36
+    return 36
+  }
+
+  // ── Total calculation ────────────────────────────────────
+  updateTotal() {
+    const isRecurring = !!this.frequencyRadioTargets.find(r => r.value === "recurring" && r.checked)
+    if (!isRecurring || !this.hasTotalDisplayTarget) return
+
+    const months = this.currentMonths()
+    const total = this.currentAmount * months
+
+    if (this.hasMonthsLabelTarget) {
+      this.monthsLabelTarget.textContent = `× ${months} חודשים`
+    }
+    this.totalDisplayTarget.textContent = total.toLocaleString("he-IL")
   }
 
   // ── Anonymous toggle ─────────────────────────────────────
