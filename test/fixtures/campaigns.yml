@@ -1,0 +1,14 @@
+orange_garden:
+  title: "הגן הכתום"
+  subtitle: "לזכר בני משפחת ביבס"
+  organization_name: "עמותת וְנָטַעְתָּ"
+  goal_amount: 2000000.00
+  bonus_goal_amount: 5000000.00
+  status: 0
+
+food_bank:
+  title: "מזון לכל"
+  subtitle: "מאבק ברעב"
+  organization_name: "עמותת לחם לכל"
+  goal_amount: 500000.00
+  status: 0
