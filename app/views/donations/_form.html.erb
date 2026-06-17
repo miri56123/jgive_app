@@ -1,0 +1,121 @@
+<%= form_with model: [campaign, donation],
+              data: { controller: "donation-form", turbo: false },
+              class: "space-y-6" do |f| %>
+
+  <%# Frequency toggle %>
+  <div>
+    <div class="flex gap-3 bg-gray-100 rounded-xl p-1 w-fit">
+      <label class="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition"
+             data-donation-form-target="oneTimeBtn"
+             data-action="click->donation-form#selectOneTime">
+        <%= f.radio_button :frequency, :one_time,
+              class: "sr-only",
+              data: { donation_form_target: "frequencyRadio" },
+              checked: donation.one_time? || donation.new_record? %>
+        תרומה חד-פעמית
+      </label>
+      <label class="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition"
+             data-donation-form-target="recurringBtn"
+             data-action="click->donation-form#selectRecurring">
+        <%= f.radio_button :frequency, :recurring,
+              class: "sr-only",
+              data: { donation_form_target: "frequencyRadio" } %>
+        הוראת קבע
+      </label>
+    </div>
+  </div>
+
+  <%# Preset amount cards %>
+  <div>
+    <p class="text-sm font-medium text-gray-700 mb-3">בחרו סכום תרומה</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <% campaign.preset_amounts.each do |preset| %>
+        <button type="button"
+                data-action="click->donation-form#selectPreset"
+                data-amount="<%= preset[:amount] %>"
+                data-donation-form-target="presetBtn"
+                class="preset-btn border-2 border-gray-200 rounded-xl p-3 text-center hover:border-purple-400 transition cursor-pointer">
+          <div class="text-lg font-bold text-purple-600">₪ <%= number_with_delimiter(preset[:amount]) %></div>
+          <div class="text-xs text-gray-500 mt-0.5"><%= preset[:label] %></div>
+        </button>
+      <% end %>
+
+      <%# Custom amount card %>
+      <div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center"
+           data-donation-form-target="customCard">
+        <div class="text-xs text-gray-500 mb-1">סכום אחר</div>
+        <div class="flex items-center gap-1 w-full">
+          <span class="text-gray-500 text-sm">₪</span>
+          <%= f.number_field :amount,
+                placeholder: "סכום",
+                min: 1, step: 1,
+                class: "w-full border-0 bg-transparent text-center text-purple-600 font-bold text-lg focus:outline-none focus:ring-0",
+                data: { donation_form_target: "amountField", action: "input->donation-form#clearPreset" } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Display preference %>
+  <div>
+    <p class="text-sm font-medium text-gray-700 mb-3">כיצד להציג את שמך?</p>
+    <div class="space-y-2">
+      <% [
+        [:full_name,      "השם שלי וסכום התרומה",      "כולם יראו את שמך המלא"],
+        [:first_name_only, "רק השם הפרטי שלי",         "שמך הפרטי בלבד יוצג"],
+        [:anonymous,      "אנונימי",                   "שמך לא יוצג כלל"]
+      ].each do |value, label, hint| %>
+        <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition"
+               data-action="click->donation-form#toggleAnonymous">
+          <%= f.radio_button :display_preference, value,
+                class: "mt-0.5 accent-purple-600",
+                checked: donation.display_preference == value.to_s,
+                data: { donation_form_target: "displayRadio" } %>
+          <div>
+            <div class="text-sm font-medium text-gray-800"><%= label %></div>
+            <div class="text-xs text-gray-400"><%= hint %></div>
+          </div>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Donor name (hidden when anonymous) %>
+  <div data-donation-form-target="nameField">
+    <%= f.label :donor_name, "שם מלא", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_field :donor_name,
+          placeholder: "ישראל ישראלי",
+          class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" %>
+    <% if donation.errors[:donor_name].any? %>
+      <p class="text-red-500 text-xs mt-1"><%= donation.errors[:donor_name].first %></p>
+    <% end %>
+  </div>
+
+  <%# Dedication message %>
+  <div>
+    <%= f.label :dedication_message, "הקדשה (אופציונלי)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :dedication_message,
+          placeholder: "לזכר...",
+          rows: 2,
+          class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none" %>
+  </div>
+
+  <%# Errors %>
+  <% if donation.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+      <ul class="space-y-1 list-disc list-inside">
+        <% donation.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# Submit %>
+  <%= f.submit "המשך לתרומה",
+        class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-full transition text-base shadow-md cursor-pointer" %>
+
+  <p class="text-xs text-center text-gray-400">
+    לאחר לחיצה תועברו להשלמת התשלום. תרומה זו תירשם כממתינה עד להשלמת התשלום.
+  </p>
+<% end %>
