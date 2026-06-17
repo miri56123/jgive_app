@@ -140,6 +140,71 @@ The `Donation#status` enum is the single source of truth — no other code path 
 
 ---
 
+## Test Suite
+
+**50 tests · 107 assertions · 0 failures · 0 skips**
+
+### Campaign model (15 tests)
+| Test | Covers |
+|------|--------|
+| requires title | presence validation |
+| requires organization_name | presence validation |
+| requires goal_amount > 0 | numericality validation |
+| amount_raised includes pending and paid | all donations counted toward progress |
+| amount_raised updates immediately on new donation | memoization cleared on fresh load |
+| percent_funded capped at 100 | overflow protection |
+| donor_count includes pending and paid | all donations counted |
+| active / ended enum values | integer backing (0/1) |
+| progress_pct uses bonus_goal_amount as ceiling | dual-goal bar logic |
+| progress_pct never above 100 | cap guard |
+| goal_marker_pct returns nil with no bonus goal | single-goal campaigns |
+| goal_marker_pct returns correct % with bonus goal | marker position math |
+| preset_amounts → food presets for food campaign | keyword detection |
+| preset_amounts → tree presets for non-food campaign | keyword detection |
+| RECENT_DONATIONS_LIMIT constant is 20 | magic-number extracted |
+
+### Donation model (23 tests)
+| Test | Covers |
+|------|--------|
+| valid with all required attributes | happy path |
+| amount must be > 0 / cannot be negative | numericality validation |
+| donor_name required for full_name / first_name_only | conditional presence |
+| donor_name not required when anonymous | anonymous bypass |
+| status defaults to pending | enum default |
+| frequency defaults to one_time | enum default |
+| .paid / .pending scopes | enum-generated scopes |
+| display_name: full name | enum predicate |
+| display_name: first name only | split logic |
+| display_name: anonymous label | fallback string |
+| display_name: nil donor_name returns nil safely | safe navigation |
+| enum values are correct integers | backing values |
+| DEFAULT_MONTHS constant is 36 | magic-number extracted |
+| recurring donation accepts months | valid range |
+| months must be between 2 and DEFAULT_MONTHS | bounds validation |
+| months can be nil for one-time donations | nil allowed |
+| months must be absent for one_time donations | consistency enforcement |
+| total_committed_amount: one_time = amount | formula |
+| total_committed_amount: recurring = amount × months | formula |
+| total_committed_amount: nil months defaults to 0 | nil safety |
+
+### Integration — requests (12 tests)
+| Test | Covers |
+|------|--------|
+| GET /campaigns → 200 | index route |
+| GET /campaigns/:id → 200 | show route |
+| GET /campaigns/99999 → 404 | rescue_from RecordNotFound |
+| POST create valid params → redirect + pending status | happy path |
+| POST create sets status to pending | status default |
+| POST create missing amount → 422 | validation error |
+| POST create missing donor_name → 422 | validation error |
+| POST create anonymous → no donor_name required | anonymous bypass |
+| POST create recurring → stores months | recurring logic |
+| POST create invalid months (1) → 422 | months bounds |
+| POST create to ended campaign → redirect + alert | ended-campaign guard |
+| POST create to missing campaign → 404 | rescue_from RecordNotFound |
+
+---
+
 ## Tools Used
 
 Built with [Claude Code](https://claude.ai/claude-code) as the primary coding assistant, with the transcript attached per assignment instructions.
