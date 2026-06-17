@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* RTL global resets */
+* {
+  direction: rtl;
+}
+
+.dir-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Tab active state */
+.tab-btn.active {
+  border-color: #9333ea;
+  color: #9333ea;
+}
+
+/* Prose RTL adjustments */
+.prose ul, .prose ol {
+  padding-inline-start: 1.5rem;
+  padding-inline-end: 0;
+}
+
+/* Number formatting (amounts) */
+.amount {
+  direction: ltr;
+  display: inline-block;
+}
+
+/* Flash auto-dismiss spacing */
+body:has(#flash-notice) main,
+body:has(#flash-alert) main {
+  margin-top: 3rem;
+}
