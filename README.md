@@ -48,19 +48,21 @@ Key methods:
 - `frequency`: `one_time (0)` | `recurring (1)` — default one_time
 - `display_preference`: `full_name (0)` | `first_name_only (1)` | `anonymous (2)` — default full_name
 
-Additional fields: `months` (integer, 2–36, required for recurring, must be absent for one_time), `dedication_message` (optional text), `payment_intent_id` (reserved for payment provider).
+Additional fields: `months` (integer, 2–36, required for recurring, must be absent for one_time), `dedication_message` (optional text), `payment_intent_id` (reserved for payment provider), `currency` (string, default `"ILS"`), `exchange_rate` (decimal, default `1.0` — ILS per 1 unit of the chosen currency, snapshotted at create time).
 
 Key methods:
 - `display_name` — returns name per preference, "תורם אנונימי" for anonymous
 - `total_committed_amount` — `amount × months` for recurring, `amount` for one_time
 
-Validations: amount > 0; donor_name required unless anonymous; months in 2..36 when present, must be absent for one_time donations.
+Validations: amount > 0; currency must be one of `ILS USD EUR GBP CAD`; exchange_rate > 0; donor_name required unless anonymous; months in 2..36 when present, must be absent for one_time donations.
 
 DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate queries, unique partial index on `payment_intent_id` for webhook lookup.
 
-### Service Object
+### Service Objects
 
-`app/services/create_donation.rb` — `CreateDonation.new(campaign:, params:).call` returns a `Result` struct with `success?`, `donation`, and `errors`. Controller stays thin; all creation logic lives here.
+`app/services/create_donation.rb` — `CreateDonation.new(campaign:, params:).call` returns a `Result` struct with `success?`, `donation`, and `errors`. Controller stays thin; all creation logic lives here. On each call, sets `exchange_rate` via `ExchangeRateService` before saving.
+
+`app/services/exchange_rate_service.rb` — `ExchangeRateService.to_ils(currency)` fetches the live ILS rate from the [Frankfurter API](https://api.frankfurter.dev) over HTTPS. Rates are cached in Rails cache for 1 hour. Falls back to `1.0` (with a log warning) if the API is unreachable. `amount_raised` on Campaign uses `SUM(amount * exchange_rate)` so all donations are normalized to ILS regardless of original currency.
 
 ### Controllers
 
@@ -75,7 +77,7 @@ DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate qu
 - **Stats bar** — amount raised (pending + paid), % funded, donor count, primary goal, bonus goal (purple zone), "Donate" anchor CTA.
 - **Progress bar** — LTR bar: green fill for raised amount, purple zone for bonus goal range, 🧡 heart marker at current progress position.
 - **Tabs** — Stimulus `tabs_controller.js` switches panels client-side. "About the Project" and "Recent Donations" have real content; "Ambassador Board", "Groups", "Updates" are stubs.
-- **Donation form** — frequency toggle (one-time / recurring), 5 preset amount cards (labels change to `N × ₪X` for recurring), months selector (2–36, default 36) with live total, custom amount input, display preference radios, donor name field (hidden when anonymous), optional dedication message.
+- **Donation modal** — native `<dialog>` element opened by the "לתרומה" CTA; Stimulus `modal_controller.js` handles open/close/backdrop-click. Auto-opens on validation failure so errors are immediately visible. Frequency toggle (one-time / recurring), currency selector (ILS/USD/EUR/GBP/CAD), 5 preset amount cards (converted to selected currency client-side using server-embedded rates; labels change to `N × $X` for recurring), months selector (2–36, default 36) with live total, custom amount input, display preference radios, donor name field (hidden when anonymous), optional dedication message.
 
 ### Security
 
@@ -91,7 +93,8 @@ DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate qu
 | Decision | Choice | Reasoning |
 |----------|--------|-----------|
 | Language | Hebrew + RTL | Matches original; `dir="rtl"` on `<html>`, `direction: ltr` on numbers |
-| Donation form | Inline section (not modal) | Modal adds ~1h of Stimulus/CSS work for little demo value |
+| Donation form | Native `<dialog>` modal | Browser-native modal API; no library needed; Stimulus controller is ~20 lines |
+| Multi-currency | Snapshot exchange rate at create time | Rate stored on the donation record so `amount_raised` is always historically accurate; server-side Frankfurter fetch avoids browser CORS issues |
 | `amount_raised` | Pending + paid | Assignment spec: "submitting the form should update campaign progress." Bar must move on submit. `status` column tracks paid vs pending for payment processing. |
 | Database | SQLite | Zero infra for dev; Render supports it with persistent disk |
 | Tabs | Client-side Stimulus | No page reload; stays "Rails way" without a full SPA |
@@ -144,7 +147,7 @@ The `Donation#status` enum is the single source of truth — no other code path 
 ### Frontend
 
 - **Turbo Stream progress update** — after donation create, broadcast a stream to update the stats bar and donor count inline without a full page reload
-- **Modal donation flow** — match the original site's multi-step modal UX (amount → display preference → confirmation) using Turbo Frames
+- **Multi-step modal flow** — extend the current single-step dialog into amount → display preference → confirmation steps using Turbo Frames
 - **Flash auto-dismiss** — Stimulus controller to fade out success/alert banners after 5 seconds
 - **Proper cover images** — Active Storage (or Cloudinary) instead of bare URL strings; add drag-and-drop upload to admin
 - **Pagination** — Recent Donations tab capped at 20; add Pagy with infinite scroll or "load more"
