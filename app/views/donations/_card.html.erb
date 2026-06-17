@@ -3,7 +3,7 @@
     <div>
       <span class="text-3xl font-bold text-gray-900 dir-ltr"><%= format_amount(donation.amount, donation.currency) %></span>
       <% if donation.currency != "ILS" %>
-        <div class="text-xs text-gray-400 mt-0.5 dir-ltr"><%= format_amount(donation.amount * donation.exchange_rate) %> ₪</div>
+        <div class="text-xs text-gray-400 mt-0.5 dir-ltr"><%= format_amount(donation.amount * donation.exchange_rate) %></div>
       <% end %>
     </div>
     <span class="text-xs text-gray-400 mt-2"><%= hebrew_time_ago(donation.created_at) %></span>
