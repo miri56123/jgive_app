@@ -58,19 +58,19 @@
 
   <%# Months selector + total — shown only for recurring %>
   <div data-donation-form-target="monthsRow" class="hidden space-y-3">
-    <%= f.hidden_field :months, value: 36, data: { donation_form_target: "monthsField" } %>
+    <%= f.hidden_field :months, value: Donation::DEFAULT_MONTHS, data: { donation_form_target: "monthsField" } %>
     <div class="flex items-center justify-between">
       <label class="text-sm font-medium text-gray-700">מספר חודשים:</label>
       <select data-donation-form-target="monthsSelect"
               data-action="change->donation-form#onMonthsChange"
               class="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
-        <% (2..36).each do |n| %>
-          <option value="<%= n %>" <%= "selected" if n == 36 %>><%= n %> חודשים</option>
+        <% (2..Donation::DEFAULT_MONTHS).each do |n| %>
+          <option value="<%= n %>" <%= "selected" if n == Donation::DEFAULT_MONTHS %>><%= n %> חודשים</option>
         <% end %>
       </select>
     </div>
     <div class="bg-purple-50 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
-      <span class="text-gray-500" data-donation-form-target="monthsLabel">× 36 חודשים</span>
+      <span class="text-gray-500" data-donation-form-target="monthsLabel">× <%= Donation::DEFAULT_MONTHS %> חודשים</span>
       <span class="font-bold text-purple-700">סה"כ: ₪<span data-donation-form-target="totalDisplay">0</span></span>
     </div>
   </div>
@@ -88,7 +88,7 @@
                data-action="click->donation-form#toggleAnonymous">
           <%= f.radio_button :display_preference, value,
                 class: "mt-0.5 accent-purple-600",
-                checked: donation.display_preference == value.to_s,
+                checked: donation.public_send(:"#{value}?"),
                 data: { donation_form_target: "displayRadio" } %>
           <div>
             <div class="text-sm font-medium text-gray-800"><%= label %></div>

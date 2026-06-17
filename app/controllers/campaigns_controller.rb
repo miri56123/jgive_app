@@ -5,7 +5,7 @@ class CampaignsController < ApplicationController
 
   def show
     @campaign = Campaign.find(params[:id])
-    @recent_donations = @campaign.donations.recent.limit(20)
+    @recent_donations = @campaign.donations.recent.limit(Campaign::RECENT_DONATIONS_LIMIT)
     @donation = Donation.new
   end
 end

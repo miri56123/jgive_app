@@ -78,6 +78,11 @@ class DonationTest < ActiveSupport::TestCase
     assert_equal "תורם אנונימי", d.display_name
   end
 
+  test "display_name with first_name_only and nil donor_name returns nil safely" do
+    d = Donation.new(valid_attrs.merge(display_preference: :first_name_only, donor_name: nil))
+    assert_nil d.display_name
+  end
+
   test "enum values are correct integers" do
     assert_equal 0, Donation.statuses[:pending]
     assert_equal 1, Donation.statuses[:paid]
@@ -86,5 +91,15 @@ class DonationTest < ActiveSupport::TestCase
     assert_equal 0, Donation.display_preferences[:full_name]
     assert_equal 1, Donation.display_preferences[:first_name_only]
     assert_equal 2, Donation.display_preferences[:anonymous]
+  end
+
+  test "DEFAULT_MONTHS constant is 36" do
+    assert_equal 36, Donation::DEFAULT_MONTHS
+  end
+
+  test "recurring donation accepts months field" do
+    d = Donation.new(valid_attrs.merge(frequency: :recurring, months: 12))
+    assert d.valid?
+    assert_equal 12, d.months
   end
 end

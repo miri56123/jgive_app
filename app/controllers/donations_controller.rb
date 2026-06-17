@@ -7,7 +7,7 @@ class DonationsController < ApplicationController
     if result.success?
       redirect_to @campaign, notice: "תודה על תרומתך! קיבלנו את פרטיך ונצור איתך קשר להשלמת התשלום."
     else
-      @recent_donations = @campaign.donations.recent.limit(20)
+      @recent_donations = @campaign.donations.recent.limit(Campaign::RECENT_DONATIONS_LIMIT)
       @donation = result.donation
       flash.now[:alert] = result.errors.join(", ")
       render "campaigns/show", status: :unprocessable_entity

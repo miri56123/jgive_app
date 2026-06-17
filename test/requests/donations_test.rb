@@ -15,6 +15,11 @@ class DonationsTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "GET campaigns index returns 200" do
+    get campaigns_path
+    assert_response :success
+  end
+
   test "POST create with valid params creates pending donation and redirects" do
     assert_difference "Donation.count", 1 do
       post campaign_donations_path(@campaign), params: {
@@ -28,7 +33,19 @@ class DonationsTest < ActionDispatch::IntegrationTest
       }
     end
     assert_redirected_to campaign_path(@campaign)
-    assert_equal "pending", Donation.last.status
+    assert Donation.last.pending?
+  end
+
+  test "POST create sets status to pending" do
+    post campaign_donations_path(@campaign), params: {
+      donation: {
+        amount: 180,
+        frequency: "one_time",
+        display_preference: "full_name",
+        donor_name: "ישראל כהן"
+      }
+    }
+    assert Donation.last.pending?
   end
 
   test "POST create with missing amount re-renders form with error" do
@@ -71,5 +88,28 @@ class DonationsTest < ActionDispatch::IntegrationTest
       }
     end
     assert_redirected_to campaign_path(@campaign)
+  end
+
+  test "POST create recurring donation stores months" do
+    post campaign_donations_path(@campaign), params: {
+      donation: {
+        amount: 180,
+        frequency: "recurring",
+        months: 12,
+        display_preference: "full_name",
+        donor_name: "ישראל כהן"
+      }
+    }
+    assert_redirected_to campaign_path(@campaign)
+    d = Donation.last
+    assert d.recurring?
+    assert_equal 12, d.months
+  end
+
+  test "POST create to missing campaign returns 404" do
+    post campaign_donations_path(campaign_id: 99999), params: {
+      donation: { amount: 180, frequency: "one_time", display_preference: "full_name", donor_name: "test" }
+    }
+    assert_response :not_found
   end
 end

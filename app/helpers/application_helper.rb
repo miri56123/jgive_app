@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def format_amount(amount)
+    "₪ #{number_with_delimiter(amount.to_i)}"
+  end
+
   def hebrew_time_ago(time)
     diff = (Time.current - time).to_i
     case diff
