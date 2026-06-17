@@ -4,7 +4,7 @@ A Ruby on Rails app that reproduces the [Jgive campaign donation page](https://w
 
 ## Live URL
 
-> _Deploy link will be added here after Render deployment_
+https://jgive-app.onrender.com
 
 ---
 
