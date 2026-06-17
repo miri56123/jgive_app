@@ -129,14 +129,26 @@ The `Donation#status` enum is the single source of truth — no other code path 
 
 ## What I'd Do With More Time
 
-- **Proper cover images** — use Active Storage (or Cloudinary) instead of bare URL strings
-- **Turbo Stream progress update** — after donation create, push a stream to update the stats bar inline without a full page reload
-- **Modal donation flow** — match the original site's multi-step modal UX with Turbo Frames
-- **i18n** — extract all Hebrew strings to `config/locales/he.yml`
-- **Flash auto-dismiss** — add a Stimulus controller to fade out the success banner after 5s
-- **Pagination** — Recent Donations tab is limited to 20; add Pagy for more
-- **Ambassador Board & Groups** — real data models and views
-- **CI** — wire GitHub Actions to run `rails test` + Brakeman on each push
+### Backend
+
+- **Payment provider integration** — wire Stripe or Cardcom: create a Payment Intent on form submit, store `payment_intent_id`, add a `POST /webhooks/payment` endpoint that verifies the signature and transitions `status` to `paid`
+- **Recurring payment scheduling** — for `frequency: recurring`, create a Stripe Subscription (or Cardcom standing-order); store `subscription_id`; webhook handler marks each charge cycle as paid
+- **`paid_at` timestamp** — add a `paid_at` datetime column to Donation; set it in the webhook handler; enables financial reporting by actual collection date vs. pledge date
+- **Background jobs** — move webhook processing to ActiveJob (e.g. `ProcessPaymentWebhookJob`) so the webhook endpoint returns 200 immediately and processing happens async; use Solid Queue (ships with Rails 8)
+- **Preset amounts as data** — move campaign presets out of hardcoded Ruby into a `preset_amounts` JSONB column on Campaign; allows admins to configure them without a deploy
+- **Ambassador Board & Groups models** — `Ambassador` (belongs_to campaign, donor_name, amount_raised, rank) and `Group` (belongs_to campaign, name, member_count, total_raised); expose via existing tab stubs
+- **Admin interface** — a minimal password-protected `/admin` for creating/editing campaigns, viewing all donations, and manually transitioning donation status; Rails' built-in `authenticate_or_request_with_http_basic` is enough for a demo
+- **i18n backend** — extract all Hebrew strings to `config/locales/he.yml`; use `t()` helpers throughout; prepares for multi-language support
+- **CI pipeline** — GitHub Actions: run `rails test` + Brakeman (security audit) + `bundle audit` (dependency CVEs) on every push and PR
+
+### Frontend
+
+- **Turbo Stream progress update** — after donation create, broadcast a stream to update the stats bar and donor count inline without a full page reload
+- **Modal donation flow** — match the original site's multi-step modal UX (amount → display preference → confirmation) using Turbo Frames
+- **Flash auto-dismiss** — Stimulus controller to fade out success/alert banners after 5 seconds
+- **Proper cover images** — Active Storage (or Cloudinary) instead of bare URL strings; add drag-and-drop upload to admin
+- **Pagination** — Recent Donations tab capped at 20; add Pagy with infinite scroll or "load more"
+- **Responsive polish** — mobile layout for the stats bar and donation form (currently functional but not optimized for small screens)
 
 ---
 
