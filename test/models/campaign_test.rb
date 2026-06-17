@@ -12,40 +12,34 @@ class CampaignTest < ActiveSupport::TestCase
     assert_not campaign.valid?
   end
 
-  test "amount_raised sums only paid donations" do
+  test "amount_raised includes both pending and paid donations" do
     campaign = campaigns(:orange_garden)
-    expected = campaign.donations.paid.sum(:amount)
+    expected = campaign.donations.sum(:amount)
     assert_equal expected, campaign.amount_raised
   end
 
-  test "amount_raised excludes pending donations" do
+  test "amount_raised updates immediately when a pending donation is created" do
     campaign = campaigns(:orange_garden)
     before = campaign.amount_raised
     campaign.donations.create!(
-      amount: 9_999,
+      amount: 250,
       frequency: :one_time,
       display_preference: :full_name,
-      donor_name: "Test",
+      donor_name: "Test Donor",
       status: :pending
     )
-    assert_equal before, campaign.amount_raised
+    assert_equal before + 250, campaign.amount_raised
   end
 
   test "percent_funded is capped at 100" do
-    campaign = Campaign.new(goal_amount: 100)
-    allow_amount = 200
-    campaign.donations.build(amount: allow_amount, status: :paid, frequency: :one_time,
-                              display_preference: :full_name, donor_name: "X")
-    # percent_funded delegates to amount_raised which hits the DB, so use a stub scenario
     c = campaigns(:orange_garden)
     assert c.percent_funded >= 0
     assert c.percent_funded <= 100
   end
 
-  test "donor_count counts only paid donations" do
+  test "donor_count includes pending and paid donations" do
     campaign = campaigns(:orange_garden)
-    paid_count = campaign.donations.paid.count
-    assert_equal paid_count, campaign.donor_count
+    assert_equal campaign.donations.count, campaign.donor_count
   end
 
   test "active and ended enum values" do

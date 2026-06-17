@@ -6,12 +6,14 @@ class Campaign < ApplicationRecord
   validates :title, presence: true
   validates :goal_amount, presence: true, numericality: { greater_than: 0 }
 
+  # Includes pending: a submitted donation should immediately update progress
+  # per assignment spec. Transitions to paid via payment webhook in production.
   def amount_raised
-    donations.paid.sum(:amount)
+    donations.sum(:amount)
   end
 
   def donor_count
-    donations.paid.count
+    donations.count
   end
 
   def percent_funded

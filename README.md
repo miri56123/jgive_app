@@ -74,7 +74,7 @@ DB indexes: `campaign_id` (via FK reference), composite `[campaign_id, status]` 
 |----------|--------|-----------|
 | Language | Hebrew + RTL | Matches original; `dir="rtl"` on `<html>`, CSS `direction: rtl` |
 | Donation form | Inline section (not modal) | Modal adds ~1h of Stimulus/CSS work for little demo value; noted in form copy |
-| `amount_raised` | Paid only | Semantically correct — pending ≠ raised. Immediate UX feedback isn't worth misleading the number |
+| `amount_raised` | Pending + paid | Assignment spec: "submitting the form should update the campaign's progress." Progress must move on submit. In production, only paid count toward actual fund disbursement — tracked via `status` column. |
 | Database | SQLite | Zero infra for dev; Render supports it with persistent disk |
 | Tabs | Client-side Stimulus | No page reload needed, stays "Rails way" without a full SPA |
 | Preset amounts | Hardcoded on Campaign model | Avoids a separate DB table for a 4–6h scope; easily extracted later |
@@ -84,7 +84,7 @@ DB indexes: `campaign_id` (via FK reference), composite `[campaign_id, status]` 
 
 ## Assumptions
 
-- "Progress toward goal" shows only **paid** donations. A donor who submits the form but doesn't complete payment doesn't move the bar. This matches real fundraising semantics.
+- "Progress toward goal" includes **both pending and paid** donations. The assignment explicitly states "submitting the form should update the campaign's progress," which requires the bar to move on form submit. The `status` column distinguishes pending from paid for payment processing purposes — only paid donations trigger fund disbursement in a real integration.
 - The preset amount labels ("נטיעת עץ", etc.) are campaign-specific and hardcoded in `Campaign#preset_amounts`. In a real multi-campaign system these would be a separate `preset_amounts` JSON column or child table.
 - Recurring donations are stored with `frequency: recurring` but no actual recurring payment is scheduled (that requires a payment provider). The distinction is passed along to the payment provider at checkout time.
 - The "Ambassador Board" and "Groups" tabs are stubs — the reference site has real data there but it's out of scope for 4–6 hours.
