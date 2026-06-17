@@ -28,7 +28,7 @@
   <%# Preset amount cards %>
   <div>
     <p class="text-sm font-medium text-gray-700 mb-3">בחרו סכום תרומה</p>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+    <div class="grid grid-cols-2 gap-3">
       <% campaign.preset_amounts.each do |preset| %>
         <button type="button"
                 data-action="click->donation-form#selectPreset"

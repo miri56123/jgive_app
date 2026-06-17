@@ -1,5 +1,8 @@
 <% content_for :title, "#{@campaign.title} | Jgive" %>
 
+<div data-controller="modal"
+     data-modal-autoopen-value="<%= @donation.errors.any? %>">
+
 <%# Hero Section %>
 <div class="relative w-full h-72 md:h-96 bg-gray-800 overflow-hidden">
   <% if @campaign.cover_image_url.present? %>
@@ -70,16 +73,17 @@
         </div>
       <% end %>
       <%# Donate CTA %>
-      <a href="#donation-form"
-         class="bg-purple-600 text-white font-bold px-8 py-3 rounded-full hover:bg-purple-700 transition text-base shadow shrink-0">
+      <button type="button"
+              data-action="click->modal#open"
+              class="bg-purple-600 text-white font-bold px-8 py-3 rounded-full hover:bg-purple-700 transition text-base shadow shrink-0">
         לתרומה
-      </a>
+      </button>
     </div>
   </div>
 </div>
 
 <%# Tabs + Content %>
-<div class="max-w-5xl mx-auto px-4 mt-6" data-controller="tabs">
+<div class="max-w-5xl mx-auto px-4 mt-6 mb-16" data-controller="tabs">
 
   <%# Tab buttons %>
   <div class="flex gap-1 border-b border-gray-200 overflow-x-auto" role="tablist">
@@ -167,12 +171,23 @@
 
 </div>
 
-<%# Donation Form %>
-<div id="donation-form" class="max-w-5xl mx-auto px-4 mt-8 mb-16">
-  <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 md:p-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-1">תרמו עכשיו</h2>
+<%# Donation Modal %>
+<dialog data-modal-target="dialog"
+        data-action="click->modal#backdropClose"
+        class="rounded-2xl shadow-2xl overflow-y-auto"
+        style="width: calc(100% - 2rem); max-width: 26rem; max-height: 90vh; margin: auto;">
+  <div class="bg-white p-6 md:p-8">
+    <div class="flex items-center justify-between mb-1">
+      <h2 class="text-2xl font-bold text-gray-800">תרמו עכשיו</h2>
+      <button type="button"
+              data-action="click->modal#close"
+              class="text-gray-400 hover:text-gray-600 w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-2xl leading-none shrink-0">
+        ×
+      </button>
+    </div>
     <p class="text-gray-500 text-sm mb-6">כל תרומה מסייעת לממש את הפרויקט</p>
-
     <%= render "donations/form", campaign: @campaign, donation: @donation %>
   </div>
+</dialog>
+
 </div>

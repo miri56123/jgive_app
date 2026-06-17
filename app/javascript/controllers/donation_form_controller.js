@@ -76,9 +76,12 @@ export default class extends Controller {
       this.recurringBtnTarget.classList.toggle("text-purple-700", isRecurring)
     }
 
-    // Show/hide months row
+    // Show/hide months row; blank the hidden field when one-time so absence validation passes
     if (this.hasMonthsRowTarget) {
       this.monthsRowTarget.classList.toggle("hidden", !isRecurring)
+    }
+    if (this.hasMonthsFieldTarget) {
+      this.monthsFieldTarget.value = isRecurring ? this.currentMonths() : ""
     }
 
     // Update preset button labels
