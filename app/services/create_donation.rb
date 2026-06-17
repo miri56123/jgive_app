@@ -10,6 +10,7 @@ class CreateDonation
 
   def call
     donation = @campaign.donations.build(@params)
+    donation.exchange_rate = ExchangeRateService.to_ils(donation.currency)
     if donation.save
       Result.new(success: true, donation: donation, errors: [])
     else

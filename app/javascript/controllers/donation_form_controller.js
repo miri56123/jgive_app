@@ -1,12 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
+const CURRENCY_SYMBOLS = { ILS: "₪", USD: "$", EUR: "€", GBP: "£", CAD: "CA$" }
+
 export default class extends Controller {
   static targets = [
     "presetBtn", "presetAmount", "amountField", "customCard",
     "oneTimeBtn", "recurringBtn", "frequencyRadio",
     "displayRadio", "nameField",
-    "monthsRow", "monthsSelect", "monthsField", "monthsLabel", "totalDisplay"
+    "monthsRow", "monthsSelect", "monthsField", "monthsLabel", "totalDisplay",
+    "currencySelect", "totalCurrencySymbol", "customCurrencySymbol"
   ]
+  static values = { rates: Object }
 
   connect() {
     this.currentAmount = 0
@@ -16,7 +20,8 @@ export default class extends Controller {
 
   // ── Preset amount selection ──────────────────────────────
   selectPreset(event) {
-    const amount = parseFloat(event.currentTarget.dataset.amount)
+    const ilsAmount = parseFloat(event.currentTarget.dataset.amount)
+    const amount = this.convertFromIls(ilsAmount)
     this.currentAmount = amount
 
     if (this.hasAmountFieldTarget) this.amountFieldTarget.value = amount
@@ -89,16 +94,46 @@ export default class extends Controller {
     this.updateTotal()
   }
 
+  // ── Currency ─────────────────────────────────────────────
+  currentCurrency() {
+    return this.hasCurrencySelectTarget ? this.currencySelectTarget.value : "ILS"
+  }
+
+  currencySymbol() {
+    return CURRENCY_SYMBOLS[this.currentCurrency()] ?? this.currentCurrency()
+  }
+
+  currentRate() {
+    return this.ratesValue[this.currentCurrency()] ?? 1.0
+  }
+
+  convertFromIls(ilsAmount) {
+    return Math.round(ilsAmount * this.currentRate())
+  }
+
+  onCurrencyChange() {
+    const isRecurring = !!this.frequencyRadioTargets.find(r => r.value === "recurring" && r.checked)
+    this.updatePresetLabels(isRecurring)
+    if (this.hasTotalCurrencySymbolTarget) {
+      this.totalCurrencySymbolTarget.textContent = this.currencySymbol()
+    }
+    if (this.hasCustomCurrencySymbolTarget) {
+      this.customCurrencySymbolTarget.textContent = this.currencySymbol()
+    }
+    this.updateTotal()
+  }
+
   updatePresetLabels(isRecurring) {
     const months = this.currentMonths()
+    const symbol = this.currencySymbol()
     this.presetBtnTargets.forEach(btn => {
-      const amount = parseFloat(btn.dataset.amount)
+      const amount = this.convertFromIls(parseFloat(btn.dataset.amount))
       const amountEl = btn.querySelector("[data-donation-form-target='presetAmount']")
       if (!amountEl) return
       if (isRecurring) {
-        amountEl.textContent = `${months} × ₪ ${amount.toLocaleString("he-IL")}`
+        amountEl.textContent = `${months} × ${symbol} ${amount.toLocaleString("he-IL")}`
       } else {
-        amountEl.textContent = `₪ ${amount.toLocaleString("he-IL")}`
+        amountEl.textContent = `${symbol} ${amount.toLocaleString("he-IL")}`
       }
     })
   }
@@ -127,6 +162,9 @@ export default class extends Controller {
 
     if (this.hasMonthsLabelTarget) {
       this.monthsLabelTarget.textContent = `× ${months} חודשים`
+    }
+    if (this.hasTotalCurrencySymbolTarget) {
+      this.totalCurrencySymbolTarget.textContent = this.currencySymbol()
     }
     this.totalDisplayTarget.textContent = total.toLocaleString("he-IL")
   }

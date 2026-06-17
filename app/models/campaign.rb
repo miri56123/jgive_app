@@ -13,7 +13,7 @@ class Campaign < ApplicationRecord
   # Includes pending: a submitted donation should immediately update progress
   # per assignment spec. Transitions to paid via payment webhook in production.
   def amount_raised
-    @amount_raised ||= donations.sum(:amount)
+    @amount_raised ||= donations.sum("amount * exchange_rate")
   end
 
   def donor_count

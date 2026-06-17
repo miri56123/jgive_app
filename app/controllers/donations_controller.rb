@@ -10,6 +10,7 @@ class DonationsController < ApplicationController
     else
       @recent_donations = @campaign.donations.recent.limit(Campaign::RECENT_DONATIONS_LIMIT)
       @donation = result.donation
+      @exchange_rates = exchange_rates_from_ils
       flash.now[:alert] = result.errors.join(", ")
       render "campaigns/show", status: :unprocessable_entity
     end
@@ -29,7 +30,7 @@ class DonationsController < ApplicationController
 
   def donation_params
     params.require(:donation).permit(
-      :amount, :frequency, :months, :display_preference, :donor_name, :dedication_message
+      :amount, :currency, :frequency, :months, :display_preference, :donor_name, :dedication_message
     )
   end
 end

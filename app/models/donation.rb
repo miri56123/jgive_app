@@ -1,5 +1,6 @@
 class Donation < ApplicationRecord
   DEFAULT_MONTHS = 36
+  SUPPORTED_CURRENCIES = %w[ILS USD EUR GBP CAD].freeze
 
   enum :status, { pending: 0, paid: 1 }, default: :pending
   enum :frequency, { one_time: 0, recurring: 1 }, default: :one_time
@@ -11,6 +12,8 @@ class Donation < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :currency, inclusion: { in: SUPPORTED_CURRENCIES }
+  validates :exchange_rate, numericality: { greater_than: 0 }
   validates :frequency, presence: true
   validates :display_preference, presence: true
   validates :donor_name, presence: true, unless: :anonymous?

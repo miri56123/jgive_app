@@ -1,6 +1,9 @@
 module ApplicationHelper
-  def format_amount(amount)
-    "₪ #{number_with_delimiter(amount.to_i)}"
+  CURRENCY_SYMBOLS = { "ILS" => "₪", "USD" => "$", "EUR" => "€", "GBP" => "£", "CAD" => "CA$" }.freeze
+
+  def format_amount(amount, currency = "ILS")
+    symbol = CURRENCY_SYMBOLS.fetch(currency, currency)
+    "#{symbol} #{number_with_delimiter(amount.to_i)}"
   end
 
   def hebrew_time_ago(time)

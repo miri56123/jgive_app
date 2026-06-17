@@ -1,6 +1,11 @@
 <div class="bg-white rounded-2xl shadow-sm flex flex-col" style="padding:20px;min-height:200px">
   <div class="flex items-start justify-between mb-3">
-    <span class="text-3xl font-bold text-gray-900 dir-ltr"><%= format_amount(donation.amount) %></span>
+    <div>
+      <span class="text-3xl font-bold text-gray-900 dir-ltr"><%= format_amount(donation.amount, donation.currency) %></span>
+      <% if donation.currency != "ILS" %>
+        <div class="text-xs text-gray-400 mt-0.5 dir-ltr"><%= format_amount(donation.amount * donation.exchange_rate) %> ₪</div>
+      <% end %>
+    </div>
     <span class="text-xs text-gray-400 mt-2"><%= hebrew_time_ago(donation.created_at) %></span>
   </div>
   <div class="text-sm font-bold text-gray-800 text-right">
