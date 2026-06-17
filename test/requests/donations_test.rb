@@ -112,4 +112,30 @@ class DonationsTest < ActionDispatch::IntegrationTest
     }
     assert_response :not_found
   end
+
+  test "POST create to ended campaign redirects with alert" do
+    ended = campaigns(:ended_campaign)
+    assert_no_difference "Donation.count" do
+      post campaign_donations_path(ended), params: {
+        donation: { amount: 180, frequency: "one_time", display_preference: "full_name", donor_name: "ישראל כהן" }
+      }
+    end
+    assert_redirected_to campaign_path(ended)
+    assert_match "הסתיים", flash[:alert]
+  end
+
+  test "POST create with invalid months is rejected" do
+    assert_no_difference "Donation.count" do
+      post campaign_donations_path(@campaign), params: {
+        donation: {
+          amount: 180,
+          frequency: "recurring",
+          months: 1,
+          display_preference: "full_name",
+          donor_name: "ישראל כהן"
+        }
+      }
+    end
+    assert_response :unprocessable_entity
+  end
 end

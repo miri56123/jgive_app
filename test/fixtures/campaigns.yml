@@ -12,3 +12,10 @@ food_bank:
   organization_name: "עמותת לחם לכל"
   goal_amount: 500000.00
   status: 0
+
+ended_campaign:
+  title: "קמפיין שהסתיים"
+  subtitle: "הסתיים"
+  organization_name: "עמותה לדוגמה"
+  goal_amount: 100000.00
+  status: 1

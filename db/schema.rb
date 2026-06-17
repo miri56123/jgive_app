@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_200000) do
   create_table "campaigns", force: :cascade do |t|
     t.decimal "bonus_goal_amount", precision: 12, scale: 2
     t.string "cover_image_url"
@@ -38,6 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_150000) do
     t.datetime "updated_at", null: false
     t.index ["campaign_id", "status"], name: "index_donations_on_campaign_id_and_status"
     t.index ["campaign_id"], name: "index_donations_on_campaign_id"
+    t.index ["payment_intent_id"], name: "index_donations_on_payment_intent_id", unique: true, where: "payment_intent_id IS NOT NULL"
   end
 
   add_foreign_key "donations", "campaigns"

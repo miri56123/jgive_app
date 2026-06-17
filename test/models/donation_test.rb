@@ -102,4 +102,17 @@ class DonationTest < ActiveSupport::TestCase
     assert d.valid?
     assert_equal 12, d.months
   end
+
+  test "months must be between 2 and DEFAULT_MONTHS" do
+    assert_not Donation.new(valid_attrs.merge(frequency: :recurring, months: 1)).valid?
+    assert_not Donation.new(valid_attrs.merge(frequency: :recurring, months: 37)).valid?
+    assert_not Donation.new(valid_attrs.merge(frequency: :recurring, months: 0)).valid?
+    assert     Donation.new(valid_attrs.merge(frequency: :recurring, months: 2)).valid?
+    assert     Donation.new(valid_attrs.merge(frequency: :recurring, months: 36)).valid?
+  end
+
+  test "months can be nil for one-time donations" do
+    d = Donation.new(valid_attrs.merge(frequency: :one_time, months: nil))
+    assert d.valid?
+  end
 end

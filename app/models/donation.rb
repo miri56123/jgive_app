@@ -7,19 +7,21 @@ class Donation < ApplicationRecord
 
   belongs_to :campaign
 
-  scope :paid, -> { where(status: :paid) }
-  scope :pending, -> { where(status: :pending) }
+  # Rails enums already generate .paid, .pending, .one_time, .recurring scopes.
   scope :recent, -> { order(created_at: :desc) }
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :frequency, presence: true
   validates :display_preference, presence: true
   validates :donor_name, presence: true, unless: :anonymous?
+  validates :months,
+            numericality: { only_integer: true, in: 2..DEFAULT_MONTHS },
+            allow_nil: true
 
   def display_name
-    if anonymous?     then "תורם אנונימי"
+    if anonymous?          then "תורם אנונימי"
     elsif first_name_only? then donor_name&.split&.first
-    else donor_name
+    else                        donor_name
     end
   end
 end

@@ -1,5 +1,6 @@
 class DonationsController < ApplicationController
   before_action :set_campaign
+  before_action :require_active_campaign
 
   def create
     result = CreateDonation.new(campaign: @campaign, params: donation_params).call
@@ -18,6 +19,12 @@ class DonationsController < ApplicationController
 
   def set_campaign
     @campaign = Campaign.find(params[:campaign_id])
+  end
+
+  def require_active_campaign
+    unless @campaign.active?
+      redirect_to @campaign, alert: "קמפיין זה הסתיים ואינו מקבל תרומות."
+    end
   end
 
   def donation_params

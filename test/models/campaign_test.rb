@@ -28,7 +28,8 @@ class CampaignTest < ActiveSupport::TestCase
       donor_name: "Test Donor",
       status: :pending
     )
-    assert_equal before + 250, campaign.amount_raised
+    # Reload to clear memoized @amount_raised so we re-query the DB
+    assert_equal before + 250, Campaign.find(campaign.id).amount_raised
   end
 
   test "percent_funded is capped at 100" do
