@@ -19,11 +19,20 @@
 <%# Stats Bar %>
 <div class="bg-white border-b border-gray-100 shadow-sm">
   <div class="max-w-5xl mx-auto px-4 py-4">
-    <%# Progress bar %>
+    <%# Progress bar — scales to bonus goal when present; marker at primary goal %>
     <div class="mb-3">
-      <div class="w-full bg-gray-200 rounded-full h-2.5">
+      <%
+        total_range = (@campaign.bonus_goal_amount.present? ? @campaign.bonus_goal_amount : @campaign.goal_amount).to_f
+        fill_pct    = [(@campaign.amount_raised.to_f / total_range * 100), 100].min
+        marker_pct  = @campaign.bonus_goal_amount.present? ? (@campaign.goal_amount.to_f / total_range * 100) : nil
+      %>
+      <div class="relative w-full bg-gray-200 rounded-full h-2.5">
         <div class="bg-green-500 h-2.5 rounded-full transition-all"
-             style="width: <%= @campaign.percent_funded %>%"></div>
+             style="width: <%= fill_pct.round(2) %>%"></div>
+        <% if marker_pct %>
+          <div class="absolute bg-white border border-gray-300 rounded-sm"
+               style="width:3px; top:-4px; bottom:-4px; right:<%= marker_pct.round(2) %>%"></div>
+        <% end %>
       </div>
     </div>
     <div class="flex flex-wrap gap-6 items-center justify-between">
