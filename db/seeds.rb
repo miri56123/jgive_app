@@ -70,12 +70,14 @@ Donation.delete_all
 
 10.times do |i|
   donor = donors[i]
+  recurring = i.odd?
   Donation.create!(
     campaign: campaign1,
     donor_name: donor[:name],
     amount: amounts[i % amounts.length],
     status: i < 8 ? :paid : :pending,
-    frequency: i.even? ? :one_time : :recurring,
+    frequency: recurring ? :recurring : :one_time,
+    months: recurring ? [ 6, 12, 24, 36 ][i / 2 % 4] : nil,
     display_preference: display_prefs[i % 3],
     dedication_message: donor[:dedication]
   )

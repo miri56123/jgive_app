@@ -220,6 +220,32 @@ The `Donation#status` enum is the single source of truth — no other code path 
 
 ---
 
+## Thought Process & AI Usage
+
+### How I approached the problem
+
+Started by reading the assignment requirements and inspecting the live Jgive campaign page to understand the exact layout, interactions, and data model. From there I wrote an implementation plan (schema, routes, service objects, Stimulus controllers) before writing any code, so the AI had a clear spec to work against rather than guessing at structure.
+
+I used **Claude Code** (Anthropic's CLI) as the primary coding assistant throughout — for scaffolding, model/validation logic, Stimulus controllers, CSS, and debugging CI failures.
+
+### Where AI helped
+
+- **Bootstrapping speed** — generated the full model layer (enums, validations, scopes, memoized helpers), service object pattern, and controller guards in one pass with no structural errors.
+- **Stimulus controllers** — `donation_form_controller.js` (~170 lines) was produced correctly end-to-end: preset selection, frequency toggle, months visibility, anonymous toggle, and live total calculation all worked on first run.
+- **RTL layout quirks** — suggested `direction: ltr` isolation for the progress bar and numeric amounts, which is non-obvious and correct.
+- **CI debugging** — correctly diagnosed that Windows doesn't preserve Unix executable bits (`git update-index --chmod=+x`) and that bin scripts had a `ruby.exe` shebang incompatible with Linux runners.
+- **Multi-currency architecture** — proposed snapshotting the exchange rate at donation-create time (rather than re-fetching on read) so historical `amount_raised` values remain stable if exchange rates shift.
+
+### Where AI needed correction or caused issues
+
+- **RuboCop spacing** — generated `[x, 100]` (missing inner spaces) in several array literals, causing CI lint failures. Required a manual autocorrect pass.
+- **Modal width** — initially used Tailwind `max-w-md` on the `<dialog>` element, which had no effect because the browser renders modals in the top layer where Tailwind utility classes aren't applied. Needed to switch to an explicit inline `max-width` style.
+- **Frankfurter API redirect** — original service used `Net::HTTP.get_response` against `api.frankfurter.app`, which returns a 301 that `Net::HTTP` doesn't follow. The AI didn't catch that `get_response` doesn't handle redirects; found by testing the service directly and seeing the 301. Fixed by switching to `api.frankfurter.dev/v1` with an explicit `Net::HTTP` SSL connection.
+- **`months` absence validation** — the `validates :months, absence: true, if: :one_time?` validation was triggered on form submit for one-time donations because the recurring months hidden field always submitted a value. The AI's initial fix was correct (clear the hidden field on frequency toggle) but needed to be identified first by reading the error message carefully.
+- **Memoization in tests** — `@amount_raised ||=` memoization caused a test failure (`amount_raised_updates_immediately`) because the cached value on the already-loaded instance wasn't cleared. Fixed by reloading the record in the assertion; the AI suggested the fix but didn't anticipate the failure upfront.
+
+---
+
 ## Tools Used
 
-Built with [Claude Code](https://claude.ai/claude-code) as the primary coding assistant, with the transcript attached per assignment instructions.
+Built with [Claude Code](https://claude.ai/claude-code) as the primary coding assistant. The full conversation transcript is attached per assignment instructions.
