@@ -96,5 +96,15 @@ end
   )
 end
 
+Donation.create!(
+  campaign: campaign1,
+  donor_name: "קרן משפחת לוינשטיין",
+  amount: 800_000,
+  status: :paid,
+  frequency: :one_time,
+  display_preference: :full_name,
+  dedication_message: "לזכר ילדי ה-7 באוקטובר"
+)
+
 puts "Seeded #{Donation.count} donations"
 puts "Done!"
