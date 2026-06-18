@@ -62,7 +62,11 @@ DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate qu
 
 `app/services/create_donation.rb` — `CreateDonation.new(campaign:, params:).call` returns a `Result` struct with `success?`, `donation`, and `errors`. Controller stays thin; all creation logic lives here. On each call, sets `exchange_rate` via `ExchangeRateService` before saving.
 
-`app/services/exchange_rate_service.rb` — `ExchangeRateService.to_ils(currency)` fetches the live ILS rate from the [Frankfurter API](https://api.frankfurter.dev) over HTTPS. Rates are cached in Rails cache for 1 hour. Falls back to `1.0` (with a log warning) if the API is unreachable. `amount_raised` on Campaign uses `SUM(amount * exchange_rate)` so all donations are normalized to ILS regardless of original currency.
+`app/services/exchange_rate_service.rb` — `ExchangeRateService.to_ils(currency, force: false)` fetches the live ILS rate from the [Frankfurter API](https://api.frankfurter.dev) over HTTPS. Rates are cached in Rails cache for 1 hour. Falls back to `1.0` (with a log warning) if the API is unreachable. `amount_raised` on Campaign uses `SUM(amount * exchange_rate)` so all donations are normalized to ILS regardless of original currency. Accepts `force: true` to bypass the cache and write a fresh value — used by the background refresh job.
+
+### Background Jobs
+
+`app/jobs/exchange_rate_refresh_job.rb` — `ExchangeRateRefreshJob` iterates all supported currencies and calls `ExchangeRateService.to_ils(currency, force: true)`, which bypasses the cache and writes a fresh rate. Scheduled every 55 minutes via Solid Queue's recurring jobs (`config/recurring.yml`) so the cache never expires before a page load. The 55-minute interval ensures at least one proactive refresh inside each 1-hour cache TTL window. Run the worker with `bin/jobs` (or `bundle exec rake solid_queue:start`).
 
 ### Controllers
 
@@ -139,7 +143,7 @@ The `Donation#status` enum is the single source of truth — no other code path 
 - **Payment provider integration** — wire Stripe or Cardcom: create a Payment Intent on form submit, store `payment_intent_id`, add a `POST /webhooks/payment` endpoint that verifies the signature and transitions `status` to `paid`
 - **Recurring payment scheduling** — for `frequency: recurring`, create a Stripe Subscription (or Cardcom standing-order); store `subscription_id`; webhook handler marks each charge cycle as paid
 - **`paid_at` timestamp** — add a `paid_at` datetime column to Donation; set it in the webhook handler; enables financial reporting by actual collection date vs. pledge date
-- **Background jobs** — move webhook processing to ActiveJob (e.g. `ProcessPaymentWebhookJob`) so the webhook endpoint returns 200 immediately and processing happens async; use Solid Queue (ships with Rails 8)
+- **Webhook background jobs** — move webhook processing to ActiveJob (e.g. `ProcessPaymentWebhookJob`) so the webhook endpoint returns 200 immediately and processes the status transition async via Solid Queue
 - **Preset amounts as data** — move campaign presets out of hardcoded Ruby into a `preset_amounts` JSONB column on Campaign; allows admins to configure them without a deploy
 - **Ambassador Board & Groups models** — `Ambassador` (belongs_to campaign, donor_name, amount_raised, rank) and `Group` (belongs_to campaign, name, member_count, total_raised); expose via existing tab stubs
 - **Admin interface** — a minimal password-protected `/admin` for creating/editing campaigns, viewing all donations, and manually transitioning donation status; Rails' built-in `authenticate_or_request_with_http_basic` is enough for a demo

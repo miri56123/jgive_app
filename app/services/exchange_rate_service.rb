@@ -4,10 +4,10 @@ class ExchangeRateService
   API_URL   = "https://api.frankfurter.dev/v1/latest"
   CACHE_TTL = 1.hour
 
-  def self.to_ils(currency)
+  def self.to_ils(currency, force: false)
     return 1.0 if currency == "ILS"
 
-    Rails.cache.fetch("exchange_rate/#{currency}_to_ILS", expires_in: CACHE_TTL) do
+    Rails.cache.fetch("exchange_rate/#{currency}_to_ILS", expires_in: CACHE_TTL, force: force) do
       uri  = URI("#{API_URL}?from=#{currency}&to=ILS")
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl      = true
