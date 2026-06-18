@@ -90,6 +90,7 @@ DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate qu
 - Strong parameters in `DonationsController`
 - CSRF protection via Rails default
 - Ended-campaign guard rejects donations via `before_action`
+- **Rate limiting** via `Rack::Attack` (`config/initializers/rack_attack.rb`): donation submissions throttled to 5 per minute per IP; all other requests throttled to 300 per 5 minutes per IP. Assets, `/cable`, and `/up` are safelisted. Throttled requests receive a 429 with a Hebrew message. Disabled in the test environment so existing request specs are unaffected.
 
 ---
 
