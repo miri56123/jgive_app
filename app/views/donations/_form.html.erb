@@ -2,6 +2,7 @@
               data: { controller: "donation-form", turbo: false,
                       "donation-form-rates-value": exchange_rates.to_json },
               class: "space-y-6" do |f| %>
+  <%= f.hidden_field :idempotency_key %>
 
   <%# Frequency toggle %>
   <div>

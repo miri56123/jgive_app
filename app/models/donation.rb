@@ -11,6 +11,7 @@ class Donation < ApplicationRecord
   # Rails enums already generate .paid, .pending, .one_time, .recurring scopes.
   scope :recent, -> { order(created_at: :desc) }
 
+  validates :idempotency_key, uniqueness: { allow_nil: true }
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :currency, inclusion: { in: SUPPORTED_CURRENCIES }
   validates :exchange_rate, numericality: { greater_than: 0 }
@@ -36,6 +37,8 @@ class Donation < ApplicationRecord
       partial: "donations/card",
       locals: { donation: self }
     )
+  rescue => e
+    Rails.logger.error("[Donation] broadcast failed id=#{id} error=#{e.message}")
   end
 
   def display_name

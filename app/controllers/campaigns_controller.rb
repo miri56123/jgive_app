@@ -6,7 +6,7 @@ class CampaignsController < ApplicationController
   def show
     @campaign = Campaign.find(params[:id])
     @recent_donations = @campaign.donations.recent.limit(Campaign::RECENT_DONATIONS_LIMIT)
-    @donation = Donation.new
+    @donation = Donation.new(idempotency_key: SecureRandom.uuid)
     @exchange_rates = exchange_rates_from_ils
   end
 end
