@@ -10,7 +10,7 @@ class Campaign < ApplicationRecord
   validates :organization_name, presence: true
   validates :goal_amount, presence: true, numericality: { greater_than: 0 }
   validates :cover_image_url,
-            format: { with: %r{\Ahttps?://}i, message: "must be an http/https URL" },
+            format: { with: /\Ahttps?:\/\/[^\s]+\z/i, message: "must be a valid http/https URL" },
             allow_blank: true
 
   def amount_raised
