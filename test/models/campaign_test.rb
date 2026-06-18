@@ -14,7 +14,7 @@ class CampaignTest < ActiveSupport::TestCase
 
   test "amount_raised includes both pending and paid donations" do
     campaign = campaigns(:orange_garden)
-    expected = campaign.donations.sum(:amount)
+    expected = campaign.donations.sum("amount * exchange_rate")
     assert_equal expected, campaign.amount_raised
   end
 

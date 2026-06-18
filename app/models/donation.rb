@@ -41,6 +41,10 @@ class Donation < ApplicationRecord
     Rails.logger.error("[Donation] broadcast failed id=#{id} error=#{e.message}")
   end
 
+  def amount_in_ils
+    amount * exchange_rate
+  end
+
   def display_name
     if anonymous?          then "תורם אנונימי"
     elsif first_name_only? then donor_name&.split&.first

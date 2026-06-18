@@ -1,6 +1,10 @@
 class CampaignsController < ApplicationController
   def index
-    @campaigns = Campaign.order(status: :asc, created_at: :desc)
+    @campaigns = Campaign
+      .order(status: :asc, created_at: :desc)
+      .left_joins(:donations)
+      .select("campaigns.*, SUM(donations.amount * donations.exchange_rate) AS amount_raised_cache, COUNT(donations.id) AS donor_count_cache")
+      .group("campaigns.id")
   end
 
   def show

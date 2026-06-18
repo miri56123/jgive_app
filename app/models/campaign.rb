@@ -10,14 +10,22 @@ class Campaign < ApplicationRecord
   validates :organization_name, presence: true
   validates :goal_amount, presence: true, numericality: { greater_than: 0 }
 
-  # Includes pending: a submitted donation should immediately update progress
-  # per assignment spec. Transitions to paid via payment webhook in production.
   def amount_raised
-    @amount_raised ||= donations.sum("amount * exchange_rate")
+    @amount_raised ||=
+      if respond_to?(:amount_raised_cache) && !amount_raised_cache.nil?
+        amount_raised_cache.to_f
+      else
+        donations.sum("amount * exchange_rate")
+      end
   end
 
   def donor_count
-    @donor_count ||= donations.count
+    @donor_count ||=
+      if respond_to?(:donor_count_cache) && !donor_count_cache.nil?
+        donor_count_cache.to_i
+      else
+        donations.count
+      end
   end
 
   def percent_funded
@@ -39,12 +47,6 @@ class Campaign < ApplicationRecord
   end
 
   def preset_amounts
-    presets_data
-  end
-
-  private
-
-  def presets_data
     if FOOD_CAMPAIGN_KEYWORDS.any? { |kw| title.include?(kw) || organization_name.to_s.include?(kw) }
       [
         { amount: 50,    label: "סל מזון 1" },

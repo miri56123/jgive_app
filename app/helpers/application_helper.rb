@@ -6,14 +6,19 @@ module ApplicationHelper
     "#{symbol} #{number_with_delimiter(amount.to_i)}"
   end
 
+  MINUTE = 60
+  HOUR   = 3_600
+  DAY    = 86_400
+  MONTH  = 2_592_000
+
   def hebrew_time_ago(time)
     diff = (Time.current - time).to_i
     case diff
-    when 0..59      then "עכשיו"
-    when 60..3599   then "לפני כ-#{(diff / 60)} דקות"
-    when 3600..86399 then "לפני כ-#{(diff / 3600)} שעות"
-    when 86400..2591999 then "לפני כ-#{(diff / 86400)} ימים"
-    else                  "לפני כ-#{(diff / 2592000)} חודשים"
+    when (0...MINUTE)        then "עכשיו"
+    when (MINUTE...HOUR)     then "לפני כ-#{diff / MINUTE} דקות"
+    when (HOUR...DAY)        then "לפני כ-#{diff / HOUR} שעות"
+    when (DAY...MONTH)       then "לפני כ-#{diff / DAY} ימים"
+    else                          "לפני כ-#{diff / MONTH} חודשים"
     end
   end
 end
