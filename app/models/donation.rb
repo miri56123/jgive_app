@@ -22,6 +22,22 @@ class Donation < ApplicationRecord
             allow_nil: true
   validates :months, absence: true, if: :one_time?
 
+  after_create_commit do
+    fresh_campaign = Campaign.find(campaign_id)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      fresh_campaign,
+      target: "campaign-stats-#{campaign_id}",
+      partial: "campaigns/stats",
+      locals: { campaign: fresh_campaign }
+    )
+    Turbo::StreamsChannel.broadcast_prepend_to(
+      fresh_campaign,
+      target: "recent-donations-#{campaign_id}",
+      partial: "donations/card",
+      locals: { donation: self }
+    )
+  end
+
   def display_name
     if anonymous?          then "תורם אנונימי"
     elsif first_name_only? then donor_name&.split&.first

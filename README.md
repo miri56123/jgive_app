@@ -74,10 +74,11 @@ DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate qu
 
 - **Campaigns index** — card grid: cover image, title, org name, amount raised, thin progress bar, donors + % funded.
 - **Hero section** — full-width cover image with title/subtitle overlaid (RTL).
-- **Stats bar** — amount raised (pending + paid), % funded, donor count, primary goal, bonus goal (purple zone), "Donate" anchor CTA.
+- **Stats bar** — amount raised (pending + paid), % funded, donor count, primary goal, bonus goal (purple zone), "Donate" anchor CTA. Extracted to `campaigns/_stats.html.erb` partial so it can be re-rendered via Turbo Streams.
 - **Progress bar** — LTR bar: green fill for raised amount, purple zone for bonus goal range, 🧡 heart marker at current progress position.
 - **Tabs** — Stimulus `tabs_controller.js` switches panels client-side. "About the Project" and "Recent Donations" have real content; "Ambassador Board", "Groups", "Updates" are stubs.
 - **Donation modal** — native `<dialog>` element opened by the "לתרומה" CTA; Stimulus `modal_controller.js` handles open/close/backdrop-click. Auto-opens on validation failure so errors are immediately visible. Frequency toggle (one-time / recurring), currency selector (ILS/USD/EUR/GBP/CAD), 5 preset amount cards (converted to selected currency client-side using server-embedded rates; labels change to `N × $X` for recurring), months selector (2–36, default 36) with live total, custom amount input, display preference radios, donor name field (hidden when anonymous), optional dedication message.
+- **Real-time updates** — Action Cable + Turbo Streams push live updates to every connected browser tab when a donation is submitted. `turbo_stream_from @campaign` subscribes the page; `Donation#after_create_commit` broadcasts two streams: `broadcast_replace_to` replaces the stats bar with fresh numbers, and `broadcast_prepend_to` inserts the new donation card at the top of the Recent Donations grid — no page reload required on any client.
 
 ### Security
 
@@ -100,6 +101,7 @@ DB indexes: `campaign_id` FK, composite `[campaign_id, status]` for aggregate qu
 | Tabs | Client-side Stimulus | No page reload; stays "Rails way" without a full SPA |
 | Preset amounts | Hardcoded on Campaign model | Avoids a separate DB table for a 4–6h scope; keyword detection on title/org name |
 | CSS | Tailwind v4 | Fastest path to approximate Jgive's design; ships with Rails 8 |
+| Real-time updates | Action Cable async adapter + Turbo Streams | No extra gem or Redis needed for a single-server demo; `after_create_commit` broadcasts stats bar replacement and donation card prepend to all subscribers |
 
 ---
 
@@ -146,7 +148,6 @@ The `Donation#status` enum is the single source of truth — no other code path 
 
 ### Frontend
 
-- **Turbo Stream progress update** — after donation create, broadcast a stream to update the stats bar and donor count inline without a full page reload
 - **Multi-step modal flow** — extend the current single-step dialog into amount → display preference → confirmation steps using Turbo Frames
 - **Flash auto-dismiss** — Stimulus controller to fade out success/alert banners after 5 seconds
 - **Proper cover images** — Active Storage (or Cloudinary) instead of bare URL strings; add drag-and-drop upload to admin
@@ -235,6 +236,7 @@ I used **Claude Code** (Anthropic's CLI) as the primary coding assistant through
 - **RTL layout quirks** — suggested `direction: ltr` isolation for the progress bar and numeric amounts, which is non-obvious and correct.
 - **CI debugging** — correctly diagnosed that Windows doesn't preserve Unix executable bits (`git update-index --chmod=+x`) and that bin scripts had a `ruby.exe` shebang incompatible with Linux runners.
 - **Multi-currency architecture** — proposed snapshotting the exchange rate at donation-create time (rather than re-fetching on read) so historical `amount_raised` values remain stable if exchange rates shift.
+- **Real-time broadcast design** — correctly identified that `amount_raised` uses `||=` memoization, so the `after_create_commit` callback must call `Campaign.find(campaign_id)` to get a fresh instance rather than reusing the already-loaded `campaign` association (which would return the pre-donation cached value).
 
 ### Where AI needed correction or caused issues
 
