@@ -2,6 +2,8 @@
 
 A Ruby on Rails application that replicates the [Jgive campaign donation page](https://www.jgive.com/new/he/ils/donation-targets/159183) — the complete donor-facing flow from campaign discovery through form submission.
 
+> **Note:** This is a backend-focused project. The UI is functional and reasonably close to the reference, but pixel-perfect visual fidelity was not the goal — backend architecture, data modeling, service design, and test coverage were.
+
 **Live:** https://jgive-app.onrender.com
 
 ---
