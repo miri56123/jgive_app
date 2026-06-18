@@ -138,4 +138,36 @@ class DonationsTest < ActionDispatch::IntegrationTest
     end
     assert_response :unprocessable_entity
   end
+
+  test "POST create stores idempotency_key on the donation record" do
+    key = SecureRandom.uuid
+    post campaign_donations_path(@campaign), params: {
+      donation: {
+        amount: 180, frequency: "one_time",
+        display_preference: "full_name", donor_name: "ישראל כהן",
+        idempotency_key: key
+      }
+    }
+    assert_redirected_to campaign_path(@campaign)
+    assert_equal key, Donation.last.idempotency_key
+  end
+
+  test "POST create with duplicate idempotency_key is idempotent" do
+    key = SecureRandom.uuid
+    Donation.create!(
+      campaign: @campaign, amount: 180, frequency: :one_time,
+      display_preference: :full_name, donor_name: "ישראל כהן",
+      idempotency_key: key
+    )
+    assert_no_difference "Donation.count" do
+      post campaign_donations_path(@campaign), params: {
+        donation: {
+          amount: 999, frequency: "one_time",
+          display_preference: "full_name", donor_name: "שם אחר",
+          idempotency_key: key
+        }
+      }
+    end
+    assert_redirected_to campaign_path(@campaign)
+  end
 end

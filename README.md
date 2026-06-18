@@ -133,6 +133,7 @@ Calls `ExchangeRateService.to_ils(currency, force: true)` for each non-ILS curre
 
 | Measure | Implementation |
 |---------|---------------|
+| Idempotency | UUID generated per form render, stored as `idempotency_key` (nullable, unique partial index); duplicate submit returns existing donation silently |
 | Rate limiting | `Rack::Attack`: 5 donation POSTs/min per IP · 300 general requests/5 min per IP · assets + `/cable` + `/up` safelisted · 429 on throttle |
 | XSS | `sanitize` with allowlisted tags on campaign description |
 | Mass assignment | Strong parameters in `DonationsController` |
@@ -199,7 +200,7 @@ To advance a donation from `pending → paid`:
 
 ## Test Suite
 
-**50 tests · 107 assertions · 0 failures · 0 skips**
+**54 tests · 120 assertions · 0 failures · 0 skips**
 
 ### Campaign model — 15 tests
 | Test | Covers |
@@ -220,7 +221,7 @@ To advance a donation from `pending → paid`:
 | preset_amounts → tree presets for non-food campaign | keyword detection |
 | RECENT_DONATIONS_LIMIT constant is 20 | magic-number extracted |
 
-### Donation model — 23 tests
+### Donation model — 25 tests
 | Test | Covers |
 |------|--------|
 | valid with all required attributes | happy path |
@@ -243,8 +244,10 @@ To advance a donation from `pending → paid`:
 | total_committed_amount: one_time = amount | formula |
 | total_committed_amount: recurring = amount × months | formula |
 | total_committed_amount: nil months defaults to 0 | nil safety |
+| idempotency_key allows nil on multiple donations | nullable uniqueness |
+| idempotency_key must be unique when present | duplicate prevention |
 
-### Request integration — 12 tests
+### Request integration — 14 tests
 | Test | Covers |
 |------|--------|
 | GET /campaigns → 200 | index route |
@@ -259,6 +262,8 @@ To advance a donation from `pending → paid`:
 | POST create invalid months (1) → 422 | months bounds |
 | POST create to ended campaign → redirect + alert | ended-campaign guard |
 | POST create to missing campaign → 404 | rescue_from RecordNotFound |
+| POST create stores idempotency_key on donation | key persisted |
+| POST create with duplicate idempotency_key is idempotent | no duplicate record, redirects |
 
 ---
 

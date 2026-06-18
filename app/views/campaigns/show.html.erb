@@ -60,12 +60,10 @@
 
   <%# Recent Donations %>
   <div id="tab-donations" data-tabs-target="panel" class="hidden py-6">
-    <div class="bg-gray-50 rounded-2xl p-5">
-      <div id="recent-donations-<%= @campaign.id %>" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <% @recent_donations.each do |d| %>
-          <%= render "donations/card", donation: d %>
-        <% end %>
-      </div>
+    <div id="recent-donations-<%= @campaign.id %>" class="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <% @recent_donations.each do |d| %>
+        <%= render "donations/card", donation: d %>
+      <% end %>
     </div>
   </div>
 

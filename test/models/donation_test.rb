@@ -136,4 +136,18 @@ class DonationTest < ActiveSupport::TestCase
     d = Donation.new(valid_attrs.merge(amount: 180, frequency: :recurring, months: nil))
     assert_equal 0, d.total_committed_amount
   end
+
+  test "idempotency_key allows nil on multiple donations" do
+    Donation.create!(valid_attrs.merge(idempotency_key: nil))
+    d2 = Donation.new(valid_attrs.merge(idempotency_key: nil))
+    assert d2.valid?
+  end
+
+  test "idempotency_key must be unique when present" do
+    key = SecureRandom.uuid
+    Donation.create!(valid_attrs.merge(idempotency_key: key))
+    d2 = Donation.new(valid_attrs.merge(idempotency_key: key))
+    assert_not d2.valid?
+    assert_includes d2.errors[:idempotency_key], "has already been taken"
+  end
 end

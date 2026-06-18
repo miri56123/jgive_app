@@ -4,7 +4,7 @@ require "rails/test_help"
 
 module ActiveSupport
   class TestCase
-    parallelize(workers: :number_of_processors)
+    parallelize(workers: :number_of_processors, threshold: 100)
     fixtures :campaigns, :donations
   end
 end
