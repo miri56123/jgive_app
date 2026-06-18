@@ -232,7 +232,7 @@ The `Donation#status` enum is the single source of truth — no other code path 
 
 Started by reading the assignment requirements and inspecting the live Jgive campaign page to understand the exact layout, interactions, and data model. From there I wrote an implementation plan (schema, routes, service objects, Stimulus controllers) before writing any code, so the AI had a clear spec to work against rather than guessing at structure.
 
-I used **Claude Code** (Anthropic's CLI) as the primary coding assistant throughout — for scaffolding, model/validation logic, Stimulus controllers, CSS, and debugging CI failures.
+I used **Claude Code** (Anthropic's CLI) as the primary coding assistant throughout — for scaffolding, model/validation logic, Stimulus controllers, CSS, and debugging CI failures. I also used **Claude for Chrome** (the browser extension) to visually inspect the live Jgive campaign page, capture layout details, and cross-check the rendered UI against the reference site during development.
 
 ### Where AI helped
 
