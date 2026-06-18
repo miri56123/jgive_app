@@ -15,12 +15,11 @@
     <%= donation.display_name %>
     <% if donation.dedication_message.present? %>
       <% msg = donation.dedication_message %>
-      <% limit = 80 %>
-      <% if msg.length > limit %>
+      <% if msg.length > Donation::DEDICATION_DISPLAY_LIMIT %>
         <p class="text-xs text-gray-400 font-normal mt-0.5"
            style="overflow-wrap:break-word;word-break:break-word;"
            data-controller="read-more">
-          <span data-read-more-target="short"><%= msg.first(limit) %>...</span>
+          <span data-read-more-target="short"><%= msg.first(Donation::DEDICATION_DISPLAY_LIMIT) %>...</span>
           <span data-read-more-target="full" class="hidden"><%= msg %></span>
           <button type="button"
                   class="text-purple-500 hover:underline font-medium"
