@@ -299,3 +299,5 @@ The implementation began with a detailed review of the assignment requirements a
 
 - [Claude Code](https://claude.ai/claude-code) — primary coding assistant
 - [Claude for Chrome](https://claude.ai) — browser-based UI inspection of the reference page
+
+The full AI session transcript (raw conversation between developer and Claude Code, including decisions, corrections, and rationale) is available in [`AI_TRANSCRIPT.md`](./AI_TRANSCRIPT.md).
