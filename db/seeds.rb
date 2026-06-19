@@ -6,7 +6,7 @@ campaign1 = Campaign.find_or_create_by!(title: "הגן הכתום") do |c|
   c.goal_amount = 2_000_000
   c.bonus_goal_amount = 5_000_000
   c.status = :active
-  c.cover_image_url = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&auto=format&fit=crop"
+  c.cover_image_url = "https://www.jgive.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN1EwQ0E9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--d4cfa52df74f75074286531bb9fd3013907d776b/%D7%94%D7%92%D7%9F%20%D7%94%D7%9B%D7%AA%D7%95%D7%9D%20(2560%20x%201440%20%D7%A4%D7%99%D7%A7%D7%A1%D7%9C)%20(5).jpg"
   c.description = <<~HTML
     <h2>הצטרפו עכשיו והיו ממקימי הגן הכתום</h2>
     <h3>לזכר שירי, אריאל וכפיר ביבס, ולזכר כל ילדי ה-7 באוקטובר.</h3>
@@ -32,7 +32,7 @@ campaign2 = Campaign.find_or_create_by!(title: "מזון לכל") do |c|
   c.organization_name = "עמותת לחם לכל"
   c.goal_amount = 500_000
   c.status = :active
-  c.cover_image_url = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&auto=format&fit=crop"
+  c.cover_image_url = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&h=675&auto=format&fit=crop"
   c.description = <<~HTML
     <h2>מזון לכל — לא עוד ילד ישן רעב</h2>
     <p>כ-400,000 ילדים בישראל חיים בעוני ומחוסרי מזון. עמותת לחם לכל פועלת כבר 15 שנה לחלוקת סלי מזון, ארוחות חמות ותמיכה לאלפי משפחות מדי שבוע.</p>
