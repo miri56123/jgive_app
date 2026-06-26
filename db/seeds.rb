@@ -27,6 +27,30 @@ campaign1 = Campaign.find_or_create_by!(title: "הגן הכתום") do |c|
   HTML
 end
 
+campaign1.update!(
+  title_en: "The Orange Garden",
+  subtitle_en: "In memory of the Bibas family and the children of October 7th",
+  organization_name_en: "Venata'ta Association",
+  description_en: <<~HTML
+    <h2>Join now and become one of the founders of the Orange Garden</h2>
+    <h3>In memory of Shiri, Ariel and Kfir Bibas, and all the children of October 7th.</h3>
+    <p>After two and a half years of pain, upheaval and struggle, comes a project that brings new hope to Israel — <strong>a place of life, healing and hope.</strong></p>
+    <p>We are setting out to build <strong>the Orange Garden</strong> — the first space of its kind in Israel, connecting memory, nature, children and healing.</p>
+    <p>Across <strong>20 dunams</strong>, a living space of nature, water, play, family and healing will rise — open to all.</p>
+    <h3>What awaits us in the Orange Garden?</h3>
+    <ul>
+      <li><strong>Therapeutic-community gardening area</strong> — a space for healing through nature for combat veterans, seniors and at-risk youth</li>
+      <li><strong>Orchards and fruit groves</strong> — a walk among fruit trees, inspired by the fruits Shiri and Ariel loved</li>
+      <li><strong>The ecological stream</strong> — a flowing stream with small wooden bridges and living water</li>
+      <li><strong>Memorial space</strong> — a respectful corner in memory of the children of October 7th</li>
+      <li><strong>The orange zip-line and play facilities</strong> — because children's laughter is the strongest answer to pain</li>
+      <li><strong>The wishing wall</strong> — a place where every child can leave a wish, prayer, hope or dream</li>
+      <li><strong>Amphitheater and outdoor classrooms</strong> — a place for performances, educational and community activities</li>
+    </ul>
+    <p>The project is an initiative of the Venata'ta Association, in partnership with the Bibas family and the Migdal HaEmek municipality.</p>
+  HTML
+)
+
 campaign2 = Campaign.find_or_create_by!(title: "מזון לכל") do |c|
   c.subtitle = "מאבק ברעב ובעוני בישראל"
   c.organization_name = "עמותת לחם לכל"
@@ -45,6 +69,23 @@ campaign2 = Campaign.find_or_create_by!(title: "מזון לכל") do |c|
     <p>כל שקל חשוב. כל תרומה מצילה.</p>
   HTML
 end
+
+campaign2.update!(
+  title_en: "Food for All",
+  subtitle_en: "Fighting hunger and poverty in Israel",
+  organization_name_en: "Bread for All Association",
+  description_en: <<~HTML
+    <h2>Food for All — no more children going to sleep hungry</h2>
+    <p>About 400,000 children in Israel live in poverty and food insecurity. The Bread for All Association has been working for 15 years distributing food baskets, hot meals and support to thousands of families every week.</p>
+    <p><strong>Your donation will help fund:</strong></p>
+    <ul>
+      <li>Weekly food baskets for 500 families</li>
+      <li>Daily hot meals for 200 children</li>
+      <li>Grants to buy school supplies</li>
+    </ul>
+    <p>Every shekel matters. Every donation saves.</p>
+  HTML
+)
 
 puts "Seeded #{Campaign.count} campaigns"
 

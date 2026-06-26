@@ -38,5 +38,10 @@ module JgiveApp
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Internationalization: Hebrew is the default; English is also available.
+    config.i18n.available_locales = [ :he, :en ]
+    config.i18n.default_locale = :he
+    config.i18n.fallbacks = true
   end
 end

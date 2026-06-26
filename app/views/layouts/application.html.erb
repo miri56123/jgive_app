@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="<%= I18n.locale %>" dir="<%= I18n.locale == :he ? "rtl" : "ltr" %>">
   <head>
     <title><%= content_for(:title) || "Jgive" %></title>
     <meta charset="utf-8">
@@ -27,20 +27,25 @@
     <%# Navigation %>
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-        <a href="/" class="shrink-0">
+        <a href="<%= root_path %>" class="shrink-0">
           <img src="/jgive-logo.png"
                alt="Jgive"
                style="height:36px;width:auto;display:block;">
         </a>
         <div class="flex items-center gap-6 text-sm text-gray-600">
-          <span class="text-gray-500 cursor-default">פתרונות</span>
-          <span class="text-gray-500 cursor-default">מוצרים</span>
-          <span class="text-gray-500 cursor-default">אודותינו</span>
+          <span class="text-gray-500 cursor-default"><%= t("layout.nav.solutions") %></span>
+          <span class="text-gray-500 cursor-default"><%= t("layout.nav.products") %></span>
+          <span class="text-gray-500 cursor-default"><%= t("layout.nav.about") %></span>
         </div>
         <div class="flex items-center gap-3 shrink-0">
-          <span class="text-sm text-gray-500">HE | ILS</span>
-          <a href="/" class="bg-purple-600 text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-purple-700 transition">
-            הרשמה
+          <span class="text-sm text-gray-500">
+            <%= link_to t("layout.other_locale_label"),
+                  url_for(locale: (I18n.locale == :he ? "en" : nil)),
+                  class: "hover:text-gray-700 font-medium" %>
+            | ILS
+          </span>
+          <a href="<%= root_path %>" class="bg-purple-600 text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-purple-700 transition">
+            <%= t("layout.signup") %>
           </a>
         </div>
       </div>
@@ -50,7 +55,7 @@
 
     <%# Footer %>
     <footer class="bg-gray-100 border-t border-gray-200 mt-16 py-8 text-sm text-gray-500 text-center">
-      <p>זכויות יוצרים © Jgive <%= Time.current.year %></p>
+      <p><%= t("layout.footer_copyright", year: Time.current.year) %></p>
     </footer>
   </body>
 </html>

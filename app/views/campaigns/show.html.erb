@@ -1,4 +1,4 @@
-<% content_for :title, "#{@campaign.title} | Jgive" %>
+<% content_for :title, "#{@campaign.display_title} | Jgive" %>
 <%= turbo_stream_from @campaign %>
 
 <div data-controller="modal"
@@ -8,14 +8,14 @@
 <div class="relative w-full h-72 md:h-96 bg-gray-800 overflow-hidden">
   <% if @campaign.cover_image_url.present? %>
     <img src="<%= @campaign.cover_image_url %>"
-         alt="<%= @campaign.title %>"
+         alt="<%= @campaign.display_title %>"
          class="w-full h-full object-cover opacity-90">
   <% end %>
   <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-  <div class="absolute bottom-6 right-6 text-white">
-    <h1 class="text-3xl md:text-4xl font-bold drop-shadow"><%= @campaign.title %></h1>
-    <% if @campaign.subtitle.present? %>
-      <p class="mt-1 text-base md:text-lg text-white/90"><%= @campaign.subtitle %></p>
+  <div class="absolute bottom-6 start-6 text-white">
+    <h1 class="text-3xl md:text-4xl font-bold drop-shadow"><%= @campaign.display_title %></h1>
+    <% if @campaign.display_subtitle.present? %>
+      <p class="mt-1 text-base md:text-lg text-white/90"><%= @campaign.display_subtitle %></p>
     <% end %>
   </div>
 </div>
@@ -28,12 +28,12 @@
   <%# Tab buttons %>
   <div class="flex gap-1 border-b border-gray-200 overflow-x-auto" role="tablist">
     <% [
-      ["about",        "על הפרויקט"],
-      ["donations",    "תרומות אחרונות"],
-      ["ambassadors",  "לוח שגרירים"],
-      ["groups",       "קבוצות"],
-      ["organization", "על העמותה"],
-      ["updates",      "עדכונים"]
+      ["about",        t("campaigns.show.tabs.about")],
+      ["donations",    t("campaigns.show.tabs.donations")],
+      ["ambassadors",  t("campaigns.show.tabs.ambassadors")],
+      ["groups",       t("campaigns.show.tabs.groups")],
+      ["organization", t("campaigns.show.tabs.organization")],
+      ["updates",      t("campaigns.show.tabs.updates")]
     ].each_with_index do |(id, label), i| %>
       <button type="button"
               role="tab"
@@ -49,12 +49,12 @@
 
   <%# About the Project %>
   <div id="tab-about" data-tabs-target="panel" class="py-6 prose prose-lg max-w-none text-gray-700 leading-relaxed">
-    <% if @campaign.description.present? %>
-      <%= sanitize @campaign.description,
+    <% if @campaign.display_description.present? %>
+      <%= sanitize @campaign.display_description,
             tags: %w[p h2 h3 h4 strong em ul ol li br a blockquote],
             attributes: %w[href class] %>
     <% else %>
-      <p class="text-gray-400 italic">אין תיאור זמין</p>
+      <p class="text-gray-400 italic"><%= t("campaigns.show.no_description") %></p>
     <% end %>
   </div>
 
@@ -71,8 +71,8 @@
   <div id="tab-ambassadors" data-tabs-target="panel" class="hidden py-6">
     <div class="text-center text-gray-400 py-12">
       <p class="text-4xl mb-3">🏅</p>
-      <p class="text-lg font-medium text-gray-500">לוח שגרירים</p>
-      <p class="text-sm mt-1">בקרוב</p>
+      <p class="text-lg font-medium text-gray-500"><%= t("campaigns.show.tabs.ambassadors") %></p>
+      <p class="text-sm mt-1"><%= t("campaigns.show.coming_soon") %></p>
     </div>
   </div>
 
@@ -80,17 +80,17 @@
   <div id="tab-groups" data-tabs-target="panel" class="hidden py-6">
     <div class="text-center text-gray-400 py-12">
       <p class="text-4xl mb-3">👥</p>
-      <p class="text-lg font-medium text-gray-500">קבוצות</p>
-      <p class="text-sm mt-1">בקרוב</p>
+      <p class="text-lg font-medium text-gray-500"><%= t("campaigns.show.tabs.groups") %></p>
+      <p class="text-sm mt-1"><%= t("campaigns.show.coming_soon") %></p>
     </div>
   </div>
 
   <%# About the Organization %>
   <div id="tab-organization" data-tabs-target="panel" class="hidden py-6">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">על העמותה</h2>
+    <h2 class="text-xl font-bold text-gray-800 mb-4"><%= t("campaigns.show.tabs.organization") %></h2>
     <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm space-y-2">
-      <p class="text-gray-700 font-semibold text-lg"><%= @campaign.organization_name %></p>
-      <p class="text-sm text-gray-500">תרומות לפרויקט זה עשויות להיות מוכרות לצורכי מס בישראל, בארה"ב, בקנדה ובאנגליה, בהתאם לתנאי השימוש של Jgive.</p>
+      <p class="text-gray-700 font-semibold text-lg"><%= @campaign.display_organization_name %></p>
+      <p class="text-sm text-gray-500"><%= t("campaigns.show.tax_notice") %></p>
     </div>
   </div>
 
@@ -98,8 +98,8 @@
   <div id="tab-updates" data-tabs-target="panel" class="hidden py-6">
     <div class="text-center text-gray-400 py-12">
       <p class="text-4xl mb-3">📢</p>
-      <p class="text-lg font-medium text-gray-500">עדכונים</p>
-      <p class="text-sm mt-1">אין עדכונים כרגע</p>
+      <p class="text-lg font-medium text-gray-500"><%= t("campaigns.show.tabs.updates") %></p>
+      <p class="text-sm mt-1"><%= t("campaigns.show.no_updates") %></p>
     </div>
   </div>
 
@@ -112,14 +112,14 @@
         style="width: calc(100% - 2rem); max-width: 26rem; max-height: 90vh; margin: auto;">
   <div class="bg-white p-6 md:p-8">
     <div class="flex items-center justify-between mb-1">
-      <h2 class="text-2xl font-bold text-gray-800">תרמו עכשיו</h2>
+      <h2 class="text-2xl font-bold text-gray-800"><%= t("campaigns.show.modal_title") %></h2>
       <button type="button"
               data-action="click->modal#close"
               class="text-gray-400 hover:text-gray-600 w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-2xl leading-none shrink-0">
         ×
       </button>
     </div>
-    <p class="text-gray-500 text-sm mb-6">כל תרומה מסייעת לממש את הפרויקט</p>
+    <p class="text-gray-500 text-sm mb-6"><%= t("campaigns.show.modal_subtitle") %></p>
     <%= render "donations/form", campaign: @campaign, donation: @donation, exchange_rates: @exchange_rates %>
   </div>
 </dialog>

@@ -1,31 +1,120 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  layout:
+    nav:
+      solutions: 'Solutions'
+      products: 'Products'
+      about: 'About Us'
+    signup: 'Sign Up'
+    footer_copyright: 'Copyright © Jgive %{year}'
+    other_locale_label: 'HE'
+
+  campaigns:
+    index:
+      title: 'Active Campaigns'
+      by: 'by'
+      raised: 'Raised'
+      donors: '%{count} donors'
+      funded: '%{pct}% funded'
+    stats:
+      raised: 'Raised'
+      funded: '%{pct}% raised'
+      donors: 'Number of donors:'
+      goal: 'Goal:'
+      bonus_goal: 'Bonus goal:'
+      donate: 'Donate'
+    show:
+      tabs:
+        about: 'About the Project'
+        donations: 'Recent Donations'
+        ambassadors: 'Ambassador Board'
+        groups: 'Groups'
+        organization: 'About the Organization'
+        updates: 'Updates'
+      no_description: 'No description available'
+      coming_soon: 'Coming soon'
+      no_updates: 'No updates yet'
+      tax_notice: 'Donations to this project may be tax-deductible in Israel, the USA, Canada, and the UK, subject to Jgive''s terms of use.'
+      modal_title: 'Donate Now'
+      modal_subtitle: 'Every donation helps bring this project to life'
+
+  donations:
+    form:
+      one_time: 'One-time donation'
+      recurring: 'Recurring donation'
+      currency: 'Currency:'
+      choose_amount: 'Choose a donation amount'
+      custom_amount: 'Other amount'
+      amount_placeholder: 'Amount'
+      months_label: 'Number of months:'
+      months_word: 'months'
+      months_count: '%{count} months'
+      months_multiplier: '× %{count} months'
+      total: 'Total:'
+      display_question: 'How should your name be displayed?'
+      display:
+        full_name:
+          label: 'My name and donation amount'
+          hint: 'Everyone will see your full name'
+        first_name_only:
+          label: 'My first name only'
+          hint: 'Only your first name will be shown'
+        anonymous:
+          label: 'Anonymous'
+          hint: 'Your name will not be shown at all'
+      full_name_label: 'Full name'
+      full_name_placeholder: 'John Doe'
+      dedication_label: 'Dedication (optional)'
+      dedication_placeholder: 'In memory of...'
+      submit: 'Continue to Donation'
+      payment_note: 'After clicking you will be taken to complete payment. This donation will be recorded as pending until payment is completed.'
+    card:
+      read_more: 'Read more'
+      read_less: 'Less'
+
+  flash:
+    donations:
+      success: 'Thank you for your donation! We have received your details and will contact you to complete the payment.'
+      campaign_ended: 'This campaign has ended and is no longer accepting donations.'
+
+  donation:
+    anonymous: 'Anonymous donor'
+
+  campaign:
+    presets:
+      food:
+        basket_1: '1 food basket'
+        baskets_2: '2 food baskets'
+        baskets_5: '5 food baskets'
+        baskets_10: '10 food baskets'
+        baskets_20: '20 food baskets'
+      trees:
+        tree_1: 'Plant a tree'
+        trees_2: 'Plant 2 trees'
+        trees_3_memory: 'Plant 3 trees – in their memory'
+        mini_forest: 'Mini forest'
+        children_garden: 'Children''s garden'
+
+  helpers:
+    time_ago:
+      now: 'just now'
+      minutes:
+        one: 'about 1 minute ago'
+        other: 'about %{count} minutes ago'
+      hours:
+        one: 'about 1 hour ago'
+        other: 'about %{count} hours ago'
+      days:
+        one: 'about 1 day ago'
+        other: 'about %{count} days ago'
+      months:
+        one: 'about 1 month ago'
+        other: 'about %{count} months ago'
+
+  activerecord:
+    attributes:
+      donation:
+        donor_name: 'Full name'
+        amount: 'Amount'
+        currency: 'Currency'
+        dedication_message: 'Dedication'
+        months: 'Number of months'

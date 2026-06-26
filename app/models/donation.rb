@@ -47,7 +47,7 @@ class Donation < ApplicationRecord
   end
 
   def display_name
-    if anonymous?          then "תורם אנונימי"
+    if anonymous?          then I18n.t("donation.anonymous")
     elsif first_name_only? then donor_name&.split&.first
     else                        donor_name
     end

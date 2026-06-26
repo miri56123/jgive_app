@@ -1,6 +1,8 @@
 <%= form_with model: [campaign, donation],
               data: { controller: "donation-form", turbo: false,
-                      "donation-form-rates-value": exchange_rates.to_json },
+                      "donation-form-rates-value": exchange_rates.to_json,
+                      "donation-form-locale-value": (I18n.locale == :he ? "he-IL" : "en-US"),
+                      "donation-form-months-word-value": t("donations.form.months_word") },
               class: "space-y-6" do |f| %>
   <%= f.hidden_field :idempotency_key %>
 
@@ -14,7 +16,7 @@
               class: "sr-only",
               data: { donation_form_target: "frequencyRadio" },
               checked: donation.one_time? || donation.new_record? %>
-        תרומה חד-פעמית
+        <%= t("donations.form.one_time") %>
       </label>
       <label class="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition"
              data-donation-form-target="recurringBtn"
@@ -22,14 +24,14 @@
         <%= f.radio_button :frequency, :recurring,
               class: "sr-only",
               data: { donation_form_target: "frequencyRadio" } %>
-        הוראת קבע
+        <%= t("donations.form.recurring") %>
       </label>
     </div>
   </div>
 
   <%# Currency selector %>
   <div class="flex items-center gap-3">
-    <%= f.label :currency, "מטבע:", class: "text-sm font-medium text-gray-700 shrink-0" %>
+    <%= f.label :currency, t("donations.form.currency"), class: "text-sm font-medium text-gray-700 shrink-0" %>
     <%= f.select :currency,
           Donation::SUPPORTED_CURRENCIES.map { |c| [ApplicationHelper::CURRENCY_SYMBOLS.fetch(c, c) + " " + c, c] },
           { selected: donation.currency.presence || "ILS" },
@@ -39,7 +41,7 @@
 
   <%# Preset amount cards %>
   <div>
-    <p class="text-sm font-medium text-gray-700 mb-3">בחרו סכום תרומה</p>
+    <p class="text-sm font-medium text-gray-700 mb-3"><%= t("donations.form.choose_amount") %></p>
     <div class="grid grid-cols-2 gap-3">
       <% campaign.preset_amounts.each do |preset| %>
         <button type="button"
@@ -55,11 +57,11 @@
       <%# Custom amount card %>
       <div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center"
            data-donation-form-target="customCard">
-        <div class="text-xs text-gray-500 mb-1">סכום אחר</div>
+        <div class="text-xs text-gray-500 mb-1"><%= t("donations.form.custom_amount") %></div>
         <div class="flex items-center gap-1 w-full">
           <span class="text-gray-500 text-sm" data-donation-form-target="customCurrencySymbol">₪</span>
           <%= f.number_field :amount,
-                placeholder: "סכום",
+                placeholder: t("donations.form.amount_placeholder"),
                 min: 1, step: 1,
                 class: "w-full border-0 bg-transparent text-center text-purple-600 font-bold text-lg focus:outline-none focus:ring-0",
                 data: { donation_form_target: "amountField", action: "input->donation-form#onCustomAmount" } %>
@@ -72,29 +74,29 @@
   <div data-donation-form-target="monthsRow" class="hidden space-y-3">
     <%= f.hidden_field :months, value: Donation::DEFAULT_MONTHS, data: { donation_form_target: "monthsField" } %>
     <div class="flex items-center justify-between">
-      <label class="text-sm font-medium text-gray-700">מספר חודשים:</label>
+      <label class="text-sm font-medium text-gray-700"><%= t("donations.form.months_label") %></label>
       <select data-donation-form-target="monthsSelect"
               data-action="change->donation-form#onMonthsChange"
               class="border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
         <% (2..Donation::DEFAULT_MONTHS).each do |n| %>
-          <option value="<%= n %>" <%= "selected" if n == Donation::DEFAULT_MONTHS %>><%= n %> חודשים</option>
+          <option value="<%= n %>" <%= "selected" if n == Donation::DEFAULT_MONTHS %>><%= t("donations.form.months_count", count: n) %></option>
         <% end %>
       </select>
     </div>
     <div class="bg-purple-50 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
-      <span class="text-gray-500" data-donation-form-target="monthsLabel">× <%= Donation::DEFAULT_MONTHS %> חודשים</span>
-      <span class="font-bold text-purple-700">סה"כ: <span data-donation-form-target="totalCurrencySymbol">₪</span><span data-donation-form-target="totalDisplay">0</span></span>
+      <span class="text-gray-500" data-donation-form-target="monthsLabel"><%= t("donations.form.months_multiplier", count: Donation::DEFAULT_MONTHS) %></span>
+      <span class="font-bold text-purple-700"><%= t("donations.form.total") %> <span data-donation-form-target="totalCurrencySymbol">₪</span><span data-donation-form-target="totalDisplay">0</span></span>
     </div>
   </div>
 
   <%# Display preference %>
   <div>
-    <p class="text-sm font-medium text-gray-700 mb-3">כיצד להציג את שמך?</p>
+    <p class="text-sm font-medium text-gray-700 mb-3"><%= t("donations.form.display_question") %></p>
     <div class="space-y-2">
       <% [
-        [:full_name,      "השם שלי וסכום התרומה",      "כולם יראו את שמך המלא"],
-        [:first_name_only, "רק השם הפרטי שלי",         "שמך הפרטי בלבד יוצג"],
-        [:anonymous,      "אנונימי",                   "שמך לא יוצג כלל"]
+        [:full_name,       t("donations.form.display.full_name.label"),       t("donations.form.display.full_name.hint")],
+        [:first_name_only, t("donations.form.display.first_name_only.label"), t("donations.form.display.first_name_only.hint")],
+        [:anonymous,       t("donations.form.display.anonymous.label"),       t("donations.form.display.anonymous.hint")]
       ].each do |value, label, hint| %>
         <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition"
                data-action="click->donation-form#toggleAnonymous">
@@ -113,9 +115,9 @@
 
   <%# Donor name (hidden when anonymous) %>
   <div data-donation-form-target="nameField">
-    <%= f.label :donor_name, "שם מלא", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.label :donor_name, t("donations.form.full_name_label"), class: "block text-sm font-medium text-gray-700 mb-1" %>
     <%= f.text_field :donor_name,
-          placeholder: "ישראל ישראלי",
+          placeholder: t("donations.form.full_name_placeholder"),
           class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" %>
     <% if donation.errors[:donor_name].any? %>
       <p class="text-red-500 text-xs mt-1"><%= donation.errors[:donor_name].first %></p>
@@ -124,9 +126,9 @@
 
   <%# Dedication message %>
   <div>
-    <%= f.label :dedication_message, "הקדשה (אופציונלי)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.label :dedication_message, t("donations.form.dedication_label"), class: "block text-sm font-medium text-gray-700 mb-1" %>
     <%= f.text_area :dedication_message,
-          placeholder: "לזכר...",
+          placeholder: t("donations.form.dedication_placeholder"),
           rows: 2,
           class: "w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none" %>
   </div>
@@ -143,10 +145,10 @@
   <% end %>
 
   <%# Submit %>
-  <%= f.submit "המשך לתרומה",
+  <%= f.submit t("donations.form.submit"),
         class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-full transition text-base shadow-md cursor-pointer" %>
 
   <p class="text-xs text-center text-gray-400">
-    לאחר לחיצה תועברו להשלמת התשלום. תרומה זו תירשם כממתינה עד להשלמת התשלום.
+    <%= t("donations.form.payment_note") %>
   </p>
 <% end %>

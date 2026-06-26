@@ -6,7 +6,7 @@ class DonationsController < ApplicationController
     result = CreateDonation.new(campaign: @campaign, params: donation_params).call
 
     if result.success?
-      redirect_to @campaign, notice: "תודה על תרומתך! קיבלנו את פרטיך ונצור איתך קשר להשלמת התשלום."
+      redirect_to @campaign, notice: t("flash.donations.success")
     else
       @recent_donations = @campaign.donations.recent.limit(Campaign::RECENT_DONATIONS_LIMIT)
       @donation = result.donation
@@ -24,7 +24,7 @@ class DonationsController < ApplicationController
 
   def require_active_campaign
     unless @campaign.active?
-      redirect_to @campaign, alert: "קמפיין זה הסתיים ואינו מקבל תרומות."
+      redirect_to @campaign, alert: t("flash.donations.campaign_ended")
     end
   end
 

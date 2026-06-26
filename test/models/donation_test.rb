@@ -18,7 +18,7 @@ class DonationTest < ActiveSupport::TestCase
   test "amount must be greater than zero" do
     d = Donation.new(valid_attrs.merge(amount: 0))
     assert_not d.valid?
-    assert_includes d.errors[:amount], "must be greater than 0"
+    assert_includes d.errors[:amount], I18n.t("errors.messages.greater_than", count: 0)
   end
 
   test "amount cannot be negative" do
@@ -29,13 +29,13 @@ class DonationTest < ActiveSupport::TestCase
   test "donor_name required when not anonymous" do
     d = Donation.new(valid_attrs.merge(donor_name: nil, display_preference: :full_name))
     assert_not d.valid?
-    assert_includes d.errors[:donor_name], "can't be blank"
+    assert_includes d.errors[:donor_name], I18n.t("errors.messages.blank")
   end
 
   test "donor_name required when first_name_only" do
     d = Donation.new(valid_attrs.merge(donor_name: nil, display_preference: :first_name_only))
     assert_not d.valid?
-    assert_includes d.errors[:donor_name], "can't be blank"
+    assert_includes d.errors[:donor_name], I18n.t("errors.messages.blank")
   end
 
   test "donor_name not required when anonymous" do
@@ -119,7 +119,7 @@ class DonationTest < ActiveSupport::TestCase
   test "months must be absent for one_time donations" do
     d = Donation.new(valid_attrs.merge(frequency: :one_time, months: 12))
     assert_not d.valid?
-    assert_includes d.errors[:months], "must be blank"
+    assert_includes d.errors[:months], I18n.t("errors.messages.present")
   end
 
   test "total_committed_amount for one_time equals amount" do
@@ -148,6 +148,6 @@ class DonationTest < ActiveSupport::TestCase
     Donation.create!(valid_attrs.merge(idempotency_key: key))
     d2 = Donation.new(valid_attrs.merge(idempotency_key: key))
     assert_not d2.valid?
-    assert_includes d2.errors[:idempotency_key], "has already been taken"
+    assert_includes d2.errors[:idempotency_key], I18n.t("errors.messages.taken")
   end
 end

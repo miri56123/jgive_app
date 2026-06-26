@@ -4,7 +4,7 @@ class CampaignTest < ActiveSupport::TestCase
   test "requires title" do
     campaign = Campaign.new(goal_amount: 1000)
     assert_not campaign.valid?
-    assert_includes campaign.errors[:title], "can't be blank"
+    assert_includes campaign.errors[:title], I18n.t("errors.messages.blank")
   end
 
   test "requires goal_amount greater than zero" do
@@ -99,6 +99,6 @@ class CampaignTest < ActiveSupport::TestCase
   test "requires organization_name" do
     campaign = Campaign.new(title: "Test", goal_amount: 1000)
     assert_not campaign.valid?
-    assert_includes campaign.errors[:organization_name], "can't be blank"
+    assert_includes campaign.errors[:organization_name], I18n.t("errors.messages.blank")
   end
 end

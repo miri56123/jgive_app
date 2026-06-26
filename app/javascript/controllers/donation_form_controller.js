@@ -10,7 +10,7 @@ export default class extends Controller {
     "monthsRow", "monthsSelect", "monthsField", "monthsLabel", "totalDisplay",
     "currencySelect", "totalCurrencySymbol", "customCurrencySymbol"
   ]
-  static values = { rates: Object }
+  static values = { rates: Object, locale: { type: String, default: "he-IL" }, monthsWord: { type: String, default: "חודשים" } }
 
   connect() {
     this.currentAmount = 0
@@ -131,9 +131,9 @@ export default class extends Controller {
       const amountEl = btn.querySelector("[data-donation-form-target='presetAmount']")
       if (!amountEl) return
       if (isRecurring) {
-        amountEl.textContent = `${months} × ${symbol} ${amount.toLocaleString("he-IL")}`
+        amountEl.textContent = `${months} × ${symbol} ${amount.toLocaleString(this.localeValue)}`
       } else {
-        amountEl.textContent = `${symbol} ${amount.toLocaleString("he-IL")}`
+        amountEl.textContent = `${symbol} ${amount.toLocaleString(this.localeValue)}`
       }
     })
   }
@@ -161,12 +161,12 @@ export default class extends Controller {
     const total = this.currentAmount * months
 
     if (this.hasMonthsLabelTarget) {
-      this.monthsLabelTarget.textContent = `× ${months} חודשים`
+      this.monthsLabelTarget.textContent = `× ${months} ${this.monthsWordValue}`
     }
     if (this.hasTotalCurrencySymbolTarget) {
       this.totalCurrencySymbolTarget.textContent = this.currencySymbol()
     }
-    this.totalDisplayTarget.textContent = total.toLocaleString("he-IL")
+    this.totalDisplayTarget.textContent = total.toLocaleString(this.localeValue)
   }
 
   // ── Anonymous toggle ─────────────────────────────────────

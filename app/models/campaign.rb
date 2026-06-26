@@ -13,6 +13,20 @@ class Campaign < ApplicationRecord
             format: { with: /\Ahttps?:\/\/[^\s]+\z/i, message: "must be a valid http/https URL" },
             allow_blank: true
 
+  # Returns the English value of an attribute when the locale is English and a
+  # translation exists; otherwise falls back to the original (Hebrew) value.
+  TRANSLATABLE_ATTRIBUTES = %i[title subtitle organization_name description].freeze
+
+  TRANSLATABLE_ATTRIBUTES.each do |attr|
+    define_method(:"display_#{attr}") do
+      if I18n.locale == :en
+        english = public_send(:"#{attr}_en")
+        return english if english.present?
+      end
+      public_send(attr)
+    end
+  end
+
   def amount_raised
     @amount_raised ||=
       if respond_to?(:amount_raised_cache) && !amount_raised_cache.nil?
@@ -52,19 +66,19 @@ class Campaign < ApplicationRecord
   def preset_amounts
     if FOOD_CAMPAIGN_KEYWORDS.any? { |kw| title.include?(kw) || organization_name.to_s.include?(kw) }
       [
-        { amount: 50,    label: "סל מזון 1" },
-        { amount: 100,   label: "2 סלי מזון" },
-        { amount: 250,   label: "5 סלי מזון" },
-        { amount: 500,   label: "10 סלי מזון" },
-        { amount: 1_000, label: "20 סלי מזון" }
+        { amount: 50,    label: I18n.t("campaign.presets.food.basket_1") },
+        { amount: 100,   label: I18n.t("campaign.presets.food.baskets_2") },
+        { amount: 250,   label: I18n.t("campaign.presets.food.baskets_5") },
+        { amount: 500,   label: I18n.t("campaign.presets.food.baskets_10") },
+        { amount: 1_000, label: I18n.t("campaign.presets.food.baskets_20") }
       ]
     else
       [
-        { amount: 180,   label: "נטיעת עץ" },
-        { amount: 260,   label: "נטיעת 2 עצים" },
-        { amount: 360,   label: "נטיעת 3 עצים – לזכרם" },
-        { amount: 1_800, label: "מיני חורשה" },
-        { amount: 5_000, label: "גינת ילדים" }
+        { amount: 180,   label: I18n.t("campaign.presets.trees.tree_1") },
+        { amount: 260,   label: I18n.t("campaign.presets.trees.trees_2") },
+        { amount: 360,   label: I18n.t("campaign.presets.trees.trees_3_memory") },
+        { amount: 1_800, label: I18n.t("campaign.presets.trees.mini_forest") },
+        { amount: 5_000, label: I18n.t("campaign.presets.trees.children_garden") }
       ]
     end
   end

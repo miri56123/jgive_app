@@ -11,14 +11,14 @@ module ApplicationHelper
   DAY    = 86_400
   MONTH  = 2_592_000
 
-  def hebrew_time_ago(time)
+  def time_ago(time)
     diff = (Time.current - time).to_i
     case diff
-    when (0...MINUTE)        then "עכשיו"
-    when (MINUTE...HOUR)     then "לפני כ-#{diff / MINUTE} דקות"
-    when (HOUR...DAY)        then "לפני כ-#{diff / HOUR} שעות"
-    when (DAY...MONTH)       then "לפני כ-#{diff / DAY} ימים"
-    else                          "לפני כ-#{diff / MONTH} חודשים"
+    when (0...MINUTE)        then t("helpers.time_ago.now")
+    when (MINUTE...HOUR)     then t("helpers.time_ago.minutes", count: diff / MINUTE)
+    when (HOUR...DAY)        then t("helpers.time_ago.hours", count: diff / HOUR)
+    when (DAY...MONTH)       then t("helpers.time_ago.days", count: diff / DAY)
+    else                          t("helpers.time_ago.months", count: diff / MONTH)
     end
   end
 end

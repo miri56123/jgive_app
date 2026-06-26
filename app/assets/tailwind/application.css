@@ -1,9 +1,8 @@
 @import "tailwindcss";
 
-/* RTL global resets */
-* {
-  direction: rtl;
-}
+/* Text direction is driven by the <html dir="..."> attribute (set per locale:
+   rtl for Hebrew, ltr for English), so it cascades to all elements. Do not
+   hardcode `direction` globally here — that would override the dir attribute. */
 
 .dir-ltr {
   direction: ltr;

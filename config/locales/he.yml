@@ -1,0 +1,116 @@
+he:
+  layout:
+    nav:
+      solutions: 'פתרונות'
+      products: 'מוצרים'
+      about: 'אודותינו'
+    signup: 'הרשמה'
+    footer_copyright: 'זכויות יוצרים © Jgive %{year}'
+    other_locale_label: 'EN'
+
+  campaigns:
+    index:
+      title: 'קמפיינים פעילים'
+      by: 'ע"י'
+      raised: 'גויס'
+      donors: '%{count} תורמים'
+      funded: '%{pct}% גויס'
+    stats:
+      raised: 'גויסו'
+      funded: '%{pct}% גויסו'
+      donors: 'מספר תורמים:'
+      goal: 'יעד:'
+      bonus_goal: 'יעד בונוס:'
+      donate: 'לתרומה'
+    show:
+      tabs:
+        about: 'על הפרויקט'
+        donations: 'תרומות אחרונות'
+        ambassadors: 'לוח שגרירים'
+        groups: 'קבוצות'
+        organization: 'על העמותה'
+        updates: 'עדכונים'
+      no_description: 'אין תיאור זמין'
+      coming_soon: 'בקרוב'
+      no_updates: 'אין עדכונים כרגע'
+      tax_notice: 'תרומות לפרויקט זה עשויות להיות מוכרות לצורכי מס בישראל, בארה"ב, בקנדה ובאנגליה, בהתאם לתנאי השימוש של Jgive.'
+      modal_title: 'תרמו עכשיו'
+      modal_subtitle: 'כל תרומה מסייעת לממש את הפרויקט'
+
+  donations:
+    form:
+      one_time: 'תרומה חד-פעמית'
+      recurring: 'הוראת קבע'
+      currency: 'מטבע:'
+      choose_amount: 'בחרו סכום תרומה'
+      custom_amount: 'סכום אחר'
+      amount_placeholder: 'סכום'
+      months_label: 'מספר חודשים:'
+      months_word: 'חודשים'
+      months_count: '%{count} חודשים'
+      months_multiplier: '× %{count} חודשים'
+      total: 'סה"כ:'
+      display_question: 'כיצד להציג את שמך?'
+      display:
+        full_name:
+          label: 'השם שלי וסכום התרומה'
+          hint: 'כולם יראו את שמך המלא'
+        first_name_only:
+          label: 'רק השם הפרטי שלי'
+          hint: 'שמך הפרטי בלבד יוצג'
+        anonymous:
+          label: 'אנונימי'
+          hint: 'שמך לא יוצג כלל'
+      full_name_label: 'שם מלא'
+      full_name_placeholder: 'ישראל ישראלי'
+      dedication_label: 'הקדשה (אופציונלי)'
+      dedication_placeholder: 'לזכר...'
+      submit: 'המשך לתרומה'
+      payment_note: 'לאחר לחיצה תועברו להשלמת התשלום. תרומה זו תירשם כממתינה עד להשלמת התשלום.'
+    card:
+      read_more: 'קרא עוד'
+      read_less: 'פחות'
+
+  flash:
+    donations:
+      success: 'תודה על תרומתך! קיבלנו את פרטיך ונצור איתך קשר להשלמת התשלום.'
+      campaign_ended: 'קמפיין זה הסתיים ואינו מקבל תרומות.'
+
+  donation:
+    anonymous: 'תורם אנונימי'
+
+  campaign:
+    presets:
+      food:
+        basket_1: 'סל מזון 1'
+        baskets_2: '2 סלי מזון'
+        baskets_5: '5 סלי מזון'
+        baskets_10: '10 סלי מזון'
+        baskets_20: '20 סלי מזון'
+      trees:
+        tree_1: 'נטיעת עץ'
+        trees_2: 'נטיעת 2 עצים'
+        trees_3_memory: 'נטיעת 3 עצים – לזכרם'
+        mini_forest: 'מיני חורשה'
+        children_garden: 'גינת ילדים'
+
+  helpers:
+    time_ago:
+      now: 'עכשיו'
+      minutes: 'לפני כ-%{count} דקות'
+      hours: 'לפני כ-%{count} שעות'
+      days: 'לפני כ-%{count} ימים'
+      months: 'לפני כ-%{count} חודשים'
+
+  errors:
+    messages:
+      present: 'חייב להיות ריק'
+
+  activerecord:
+    attributes:
+      donation:
+        donor_name: 'שם מלא'
+        amount: 'סכום'
+        currency: 'מטבע'
+        dedication_message: 'הקדשה'
+        months: 'מספר חודשים'

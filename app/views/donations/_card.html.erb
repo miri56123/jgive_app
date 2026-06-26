@@ -7,24 +7,26 @@
         <div class="text-xs text-gray-400 mt-0.5" style="direction:ltr"><%= format_amount(donation.amount_in_ils) %></div>
       <% end %>
     </div>
-    <span class="text-xs text-gray-400 mt-2 shrink-0"><%= hebrew_time_ago(donation.created_at) %></span>
+    <span class="text-xs text-gray-400 mt-2 shrink-0"><%= time_ago(donation.created_at) %></span>
   </div>
 
   <%# Donor name + dedication %>
-  <div class="text-sm font-bold text-gray-800 text-right">
+  <div class="text-sm font-bold text-gray-800 text-start">
     <%= donation.display_name %>
     <% if donation.dedication_message.present? %>
       <% msg = donation.dedication_message %>
       <% if msg.length > Donation::DEDICATION_DISPLAY_LIMIT %>
         <p class="text-xs text-gray-400 font-normal mt-0.5"
            style="overflow-wrap:break-word;word-break:break-word;"
-           data-controller="read-more">
+           data-controller="read-more"
+           data-read-more-expand-value="<%= t("donations.card.read_more") %>"
+           data-read-more-collapse-value="<%= t("donations.card.read_less") %>">
           <span data-read-more-target="short"><%= msg.first(Donation::DEDICATION_DISPLAY_LIMIT) %>...</span>
           <span data-read-more-target="full" class="hidden"><%= msg %></span>
           <button type="button"
                   class="text-purple-500 hover:underline font-medium"
                   data-action="click->read-more#toggle"
-                  data-read-more-target="toggle">קרא עוד</button>
+                  data-read-more-target="toggle"><%= t("donations.card.read_more") %></button>
         </p>
       <% else %>
         <p class="text-xs text-gray-400 font-normal mt-0.5" style="overflow-wrap:break-word;word-break:break-word;"><%= msg %></p>
@@ -34,7 +36,7 @@
 
   <%# Heart pinned to bottom-left %>
   <div class="flex-1"></div>
-  <div style="text-align:left; margin-top:12px">
+  <div style="text-align:end; margin-top:12px">
     <%= render "shared/heart_icon", style: "width:22px;height:22px;display:inline-block" %>
   </div>
 </div>

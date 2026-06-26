@@ -10,17 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_18_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_26_000000) do
   create_table "campaigns", force: :cascade do |t|
     t.decimal "bonus_goal_amount", precision: 12, scale: 2
     t.string "cover_image_url"
     t.datetime "created_at", null: false
     t.text "description"
+    t.text "description_en"
     t.decimal "goal_amount", precision: 12, scale: 2, default: "0.0", null: false
     t.string "organization_name"
+    t.string "organization_name_en"
     t.integer "status", default: 0, null: false
     t.string "subtitle"
+    t.string "subtitle_en"
     t.string "title", null: false
+    t.string "title_en"
     t.datetime "updated_at", null: false
   end
 

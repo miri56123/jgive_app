@@ -1,5 +1,5 @@
 <div class="max-w-5xl mx-auto px-4 py-10">
-  <h1 class="text-2xl font-bold text-gray-900 mb-8 text-right">קמפיינים פעילים</h1>
+  <h1 class="text-2xl font-bold text-gray-900 mb-8 text-start"><%= t("campaigns.index.title") %></h1>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
     <% @campaigns.each do |campaign| %>
@@ -10,7 +10,7 @@
         <div class="relative h-52 bg-gray-200 overflow-hidden">
           <% if campaign.cover_image_url.present? %>
             <img src="<%= campaign.cover_image_url %>"
-                 alt="<%= campaign.title %>"
+                 alt="<%= campaign.display_title %>"
                  class="w-full h-full object-cover">
           <% end %>
           <div class="absolute top-3 end-3 bg-white bg-opacity-80 rounded-full p-1.5">
@@ -19,13 +19,13 @@
         </div>
 
         <div class="p-4">
-          <h2 class="text-base font-bold text-gray-900 text-right leading-snug mb-0.5">
-            <%= campaign.title %>
+          <h2 class="text-base font-bold text-gray-900 text-start leading-snug mb-0.5">
+            <%= campaign.display_title %>
           </h2>
-          <p class="text-xs text-gray-400 text-right mb-3">ע"י <%= campaign.organization_name %></p>
+          <p class="text-xs text-gray-400 text-start mb-3"><%= t("campaigns.index.by") %> <%= campaign.display_organization_name %></p>
 
           <div class="flex items-baseline justify-end gap-1 mb-2">
-            <span class="text-sm text-gray-400">גויס</span>
+            <span class="text-sm text-gray-400"><%= t("campaigns.index.raised") %></span>
             <span class="text-xl font-bold text-gray-900 dir-ltr">
               <%= format_amount(campaign.amount_raised) %>
             </span>
@@ -36,8 +36,8 @@
           </div>
 
           <div class="flex justify-between text-xs text-gray-400">
-            <span><%= number_with_delimiter(campaign.donor_count) %> תורמים</span>
-            <span><%= campaign.percent_funded %>% גויס</span>
+            <span><%= t("campaigns.index.donors", count: number_with_delimiter(campaign.donor_count)) %></span>
+            <span><%= t("campaigns.index.funded", pct: campaign.percent_funded) %></span>
           </div>
         </div>
 
