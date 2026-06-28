@@ -17,7 +17,7 @@ module ActionDispatch
       # such as campaign_donations_path(@campaign). Path helpers in integration
       # tests run on the session object, so the default must live here.
       def default_url_options
-        { locale: nil }
+        { locale: nil, currency: nil }
       end
     end
   end

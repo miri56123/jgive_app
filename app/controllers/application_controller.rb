@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
   around_action :switch_locale
+  before_action :set_display_currency
 
   private
 
@@ -14,11 +15,25 @@ class ApplicationController < ActionController::Base
     I18n.with_locale(locale, &action)
   end
 
-  # Keep the active locale in generated URLs. Always pass the :locale key (nil
-  # for the default locale, so Hebrew stays at "/") — this stops the optional
-  # "(:locale)" route segment from greedily capturing positional path arguments.
+  # Display currency chosen via the URL "(:currency)" segment (ILS is the default
+  # and carries no segment). Validated against the supported set.
+  def set_display_currency
+    requested = params[:currency].to_s.upcase
+    Current.display_currency =
+      Donation::SUPPORTED_CURRENCIES.include?(requested) ? requested : "ILS"
+  end
+
+  # Keep the active locale + display currency in generated URLs. Always pass both
+  # keys so the optional "(:locale)" / "(:currency)" segments don't capture
+  # positional path arguments. ILS (default) carries no segment; for any other
+  # currency we include the locale too, so we never emit a malformed "//usd".
   def default_url_options
-    { locale: (I18n.locale == I18n.default_locale ? nil : I18n.locale) }
+    currency = Current.display_currency
+    if currency.nil? || currency == "ILS"
+      { locale: (I18n.locale == I18n.default_locale ? nil : I18n.locale), currency: nil }
+    else
+      { locale: I18n.locale, currency: currency.downcase }
+    end
   end
 
   def not_found

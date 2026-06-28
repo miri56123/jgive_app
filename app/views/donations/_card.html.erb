@@ -3,8 +3,8 @@
   <div class="flex items-start justify-between mb-3">
     <div>
       <span class="text-3xl font-bold text-gray-900" style="direction:ltr;display:inline-block"><%= format_amount(donation.amount, donation.currency) %></span>
-      <% if donation.currency != "ILS" %>
-        <div class="text-xs text-gray-400 mt-0.5" style="direction:ltr"><%= format_amount(donation.amount_in_ils) %></div>
+      <% if display_currency != donation.currency %>
+        <div class="text-xs text-gray-400 mt-0.5" style="direction:ltr">≈ <%= display_amount(donation.amount_in_ils) %></div>
       <% end %>
     </div>
     <span class="text-xs text-gray-400 mt-2 shrink-0"><%= time_ago(donation.created_at) %></span>

@@ -9,6 +9,14 @@
   unicode-bidi: isolate;
 }
 
+/* Hide the native <details> disclosure triangle on the language/currency picker */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
 /* Tab active state */
 .tab-btn.active {
   border-color: #9333ea;

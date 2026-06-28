@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
   scope "(:locale)", locale: /en|he/ do
-    root to: "campaigns#index"
+    scope "(:currency)", currency: /usd|eur|gbp|cad/ do
+      root to: "campaigns#index"
 
-    resources :campaigns, only: [ :index, :show ] do
-      resources :donations, only: [ :create ]
+      resources :campaigns, only: [ :index, :show ] do
+        resources :donations, only: [ :create ]
+      end
     end
   end
 

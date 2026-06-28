@@ -7,6 +7,8 @@ en:
     signup: 'Sign Up'
     footer_copyright: 'Copyright © Jgive %{year}'
     other_locale_label: 'HE'
+    language_label: 'Language'
+    currency_label: 'Currency'
 
   campaigns:
     index:

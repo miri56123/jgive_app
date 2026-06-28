@@ -38,12 +38,48 @@
           <span class="text-gray-500 cursor-default"><%= t("layout.nav.about") %></span>
         </div>
         <div class="flex items-center gap-3 shrink-0">
-          <span class="text-sm text-gray-500">
-            <%= link_to t("layout.other_locale_label"),
-                  url_for(locale: (I18n.locale == :he ? "en" : nil)),
-                  class: "hover:text-gray-700 font-medium" %>
-            | ILS
-          </span>
+          <%# Combined language + display-currency picker (applies on click, no submit) %>
+          <details class="relative group">
+            <summary class="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18" stroke-linecap="round"/>
+              </svg>
+              <span class="font-medium"><%= I18n.locale.to_s.upcase %> | <%= display_currency %></span>
+              <svg class="w-3.5 h-3.5 text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </summary>
+            <div class="absolute end-0 mt-2 w-64 bg-white border border-gray-100 rounded-2xl shadow-xl p-4 z-50 text-start">
+              <%# Language %>
+              <div class="flex flex-col gap-0.5 mb-3">
+                <% [ [ "he", "עברית" ], [ "en", "English" ] ].each do |code, label| %>
+                  <% active = I18n.locale.to_s == code %>
+                  <%= link_to url_for(locale_switch_params(code)),
+                        class: "flex items-center justify-between px-3 py-2 rounded-lg text-sm hover:bg-gray-50 transition #{'text-purple-700 font-semibold' if active}" do %>
+                    <span><%= label %></span>
+                    <% if active %>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </div>
+              <%# Currency %>
+              <div class="border-t border-gray-100 pt-3">
+                <p class="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"><%= t("layout.currency_label") %></p>
+                <div class="grid grid-cols-3 gap-2">
+                  <% Donation::SUPPORTED_CURRENCIES.each do |c| %>
+                    <% active = display_currency == c %>
+                    <%= link_to url_for(currency_switch_params(c)),
+                          title: c,
+                          class: "flex flex-col items-center justify-center py-2 rounded-xl border transition #{active ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'}" do %>
+                      <span class="text-base font-bold leading-none <%= active ? 'text-purple-700' : 'text-gray-700' %>"><%= ApplicationHelper::CURRENCY_SYMBOLS[c] %></span>
+                      <span class="text-[11px] mt-1 <%= active ? 'text-purple-600' : 'text-gray-400' %>"><%= c %></span>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </details>
           <a href="<%= root_path %>" class="bg-purple-600 text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-purple-700 transition">
             <%= t("layout.signup") %>
           </a>

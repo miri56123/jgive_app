@@ -34,7 +34,7 @@
     <%= f.label :currency, t("donations.form.currency"), class: "text-sm font-medium text-gray-700 shrink-0" %>
     <%= f.select :currency,
           Donation::SUPPORTED_CURRENCIES.map { |c| [ApplicationHelper::CURRENCY_SYMBOLS.fetch(c, c) + " " + c, c] },
-          { selected: donation.currency.presence || "ILS" },
+          { selected: donation.currency.presence || display_currency },
           data: { donation_form_target: "currencySelect", action: "change->donation-form#onCurrencyChange" },
           class: "border border-gray-300 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" %>
   </div>

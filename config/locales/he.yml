@@ -7,6 +7,8 @@ he:
     signup: 'הרשמה'
     footer_copyright: 'זכויות יוצרים © Jgive %{year}'
     other_locale_label: 'EN'
+    language_label: 'שפה'
+    currency_label: 'מטבע'
 
   campaigns:
     index:
